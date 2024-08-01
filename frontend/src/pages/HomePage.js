@@ -13,10 +13,11 @@ function HomePage() {
           <a href="#how-it-works">How It Works</a>
           <a href="#about">About</a>
           <a href="#contact">Contact</a>
-          <button onClick={() => window.location.href = '/login'}>Login</button>
+          <button classname="loginButton" onClick={() => window.location.href = '/login'}>Login</button>
+          <button onClick={() => window.location.href = '/registration'}>Register</button>
         </div>
       </header>
-      <section className="hero">
+      <section>
         <h1>Grid Aware EV Charging</h1>
         <p>Our EV charging solution intelligently regulates energy use, ensuring grid stability and efficient power management.</p>
       </section>

@@ -12,8 +12,10 @@ function LoginPage() {
   };
 
   return (
-    <div className="login-page">
-      <h1>Login</h1>
+    <div>
+      <h1 className='loginTitle'>Login</h1>
+      <br/>
+      <div  className="login-page">
       <form onSubmit={handleSubmit}>
         <div className="form-group">
           <label htmlFor="email">Email:</label>
@@ -37,6 +39,7 @@ function LoginPage() {
         </div>
         <button type="submit">Login</button>
       </form>
+      </div>
     </div>
   );
 }
