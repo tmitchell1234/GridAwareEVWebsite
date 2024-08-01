@@ -61,6 +61,7 @@
 
 .loginButton{
   padding-left: 100px;
+  padding-right: 50%;
   border: 10px solid black;
   size: 20px;
 }
@@ -69,18 +70,28 @@
 .login-page{
   display: flex;
   justify-content: center;
-  align-items: center;
-  height: 100vh;
 }
 
 .loginTitle{
-  font-size: 30px;
-  margin-left: 20%;
+  display: flex;
+  justify-content: center;
 }
+
 
 
 .form-group{
   display: flex;
   flex-direction: column;
   margin: 20px;
+}
+
+.registrationPage{
+  display: flex;
+  justify-content: center;
+}
+
+.registrationPageForm{
+  display: flex;
+  flex-direction: center;
+  padding-left: 43%;
 }
