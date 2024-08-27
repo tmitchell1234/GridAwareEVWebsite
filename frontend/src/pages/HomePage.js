@@ -13,9 +13,13 @@ function HomePage() {
           <a href="#how-it-works">How It Works</a>
           <a href="#about">About</a>
           <a href="#contact">Contact</a>
-          <button classname="loginButton" onClick={() => window.location.href = '/login'}>Login</button>
+          <button className="px-4 py-2 rounded-md border border-neutral-300 bg-neutral-100 text-neutral-500 text-sm hover:-translate-y-1 transform transition duration-200 hover:shadow-md" onClick={() => window.location.href = '/login'}>
+            Login
+          </button>
+          {/* <button classname="loginButton" onClick={() => window.location.href = '/login'}>Login</button> */}
           <button onClick={() => window.location.href = '/registration'}>Register</button>
         </div>
+        
       </header>
       <section>
         <h1>Grid Aware EV Charging</h1>
