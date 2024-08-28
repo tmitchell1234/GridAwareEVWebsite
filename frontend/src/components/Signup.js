@@ -76,55 +76,67 @@ function Signup() {
         }
     };
 
+    const handleCancel = () => {
+        navigate('/');
+      };
+
     return (
-        <div>
-            <h2 className="registrationPage">Register</h2>
-            <div className="registrationPageForm">
+        <div className="register-container">
+            <h2 className="registerTitle">Register</h2>
+            <br />
+            <div className="register-page">
                 <form onSubmit={handleSubmit}>
-                    <label>First Name:</label>
-                    <input type="text" value={firstname} onChange={handleFirstNameChange} />
-                    <br />
-                    <label>Last Name:</label>
-                    <input type="text" value={lastname} onChange={handleLastNameChange} />
-                    <br />
-                    <label>Email:</label>
-                    <input type="email" value={email} onChange={handleEmailChange} required />
-                    <br />
-                    <label>Password:</label>
-                    <input type="password" value={password} onChange={handlePasswordChange} required />
-                    <br />
-                    <label>Confirm Password:</label>
-                    <input type="password" value={confirmPassword} onChange={handleConfirmPasswordChange} required />
-                    <br />
-                    <label>Account Type:</label>
-                    <div>
-                        <label>
-                            <input
-                                type="radio"
-                                value="customer"
-                                checked={userType === "customer"}
-                                onChange={handleUserTypeChange}
-                            />
-                            Customer
-                        </label>
-                        <label>
-                            <input
-                                type="radio"
-                                value="organization"
-                                checked={userType === "organization"}
-                                onChange={handleUserTypeChange}
-                            />
-                            Organization
-                        </label>
+                    <div className="form-group">
+                        <label htmlFor="firstname">First Name:</label>
+                        <input type="text" id="firstname" value={firstname} onChange={handleFirstNameChange} />
+                    </div>
+                    <div className="form-group">
+                        <label htmlFor="lastname">Last Name:</label>
+                        <input type="text" id="lastname" value={lastname} onChange={handleLastNameChange} />
+                    </div>
+                    <div className="form-group">
+                        <label htmlFor="email">Email:</label>
+                        <input type="email" id="email" value={email} onChange={handleEmailChange} required />
+                    </div>
+                    <div className="form-group">
+                        <label htmlFor="password">Password:</label>
+                        <input type="password" id="password" value={password} onChange={handlePasswordChange} required />
+                    </div>
+                    <div className="form-group">
+                        <label htmlFor="confirmPassword">Confirm Password:</label>
+                        <input type="password" id="confirmPassword" value={confirmPassword} onChange={handleConfirmPasswordChange} required />
+                    </div>
+                    <div className="form-group">
+                        <label>Account Type:</label>
+                        <div className="user-type-options">
+                            <label>
+                                <input
+                                    type="radio"
+                                    value="customer"
+                                    checked={userType === "customer"}
+                                    onChange={handleUserTypeChange}
+                                />
+                                Customer
+                            </label>
+                            <label>
+                                <input
+                                    type="radio"
+                                    value="organization"
+                                    checked={userType === "organization"}
+                                    onChange={handleUserTypeChange}
+                                />
+                                Organization
+                            </label>
+                        </div>
                     </div>
                     {userType === "organization" && (
-                        <div>
-                            <label>Organization Name:</label>
-                            <input type="text" value={organization} onChange={handleOrganizationChange} required />
+                        <div className="form-group">
+                            <label htmlFor="organization">Organization Name:</label>
+                            <input type="text" id="organization" value={organization} onChange={handleOrganizationChange} required />
                         </div>
                     )}
-                    <br />
-                    <button type="submit">Register</button>
+                    <button className="registersubmitbutton" type="submit">Register</button>
+                    <button className="cancelregistrationbutton" type="button" onClick={handleCancel}> Cancel</button>
                 </form>
             </div>
         </div>

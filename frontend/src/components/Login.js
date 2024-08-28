@@ -26,12 +26,12 @@ function Login() {
 
       if (!response.ok) {
         alert("Login failed. Please check your username or password.");
-        // throw new Error('Login failed. Please check your username or password.');
+        return;
       }
 
       const data = await response.json();
       console.log('Login successful:', data);
-      // After a successful login, navigate to the Customer Dashboard page
+      // After a successful login, navigate to the Customer Dashboard or organization dashboard
       navigate('/CustomerDashboardPage');
       
     } catch (error) {
@@ -40,9 +40,12 @@ function Login() {
     }
   };
 
+  const handleCancel = () => {
+    navigate('/');
+  };
   return (
-    <div>
-      <h1 className='loginTitle'>Login</h1>
+    <div className="logincontainer">
+      <h1 className="loginTitle">Login</h1>
       <br />
       <div className="login-page">
         <form onSubmit={handleSubmit}>
@@ -67,7 +70,8 @@ function Login() {
             />
           </div>
           {error && <p style={{ color: 'red' }}>{error}</p>}
-          <button type="submit">Login</button>
+          <button className="loginsubmitbutton"type="submit">Login</button>
+          <button className="cancelloginbutton"type="button" onClick={handleCancel}>Cancel</button>
         </form>
       </div>
     </div>
