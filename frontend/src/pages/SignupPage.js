@@ -1,11 +1,12 @@
 import Signup from '../components/Signup';
+import AuroraBackground from "../components/AuroraBackground";
+import React from "react";
 const SignupPage = () =>
   {
-  
-      return(
-        <div>
+    return (
+        <AuroraBackground>
           <Signup />
-        </div>
+        </AuroraBackground>
       );
   };
   
