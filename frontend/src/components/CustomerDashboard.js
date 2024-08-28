@@ -1,9 +1,17 @@
 import React, { useState } from 'react';
-import { FaHome, FaUser, FaCog, FaSignOutAlt } from 'react-icons/fa';
+import { FaHome, FaUser, FaCog, FaSignOutAlt, FaUserCircle } from 'react-icons/fa';
 import logo from '../imgs/Logo.png'; 
+import { useNavigate } from 'react-router-dom';
+import Avatar from 'react-avatar';
 
 const Sidebar = () => {
   const [isHovered, setIsHovered] = useState(false);
+  const navigate = useNavigate(); 
+
+  const handleLogout = () => {
+    // logout logic: clearing auth tokens
+    navigate('/'); 
+  };
 
   const sidebarStyle = {
     height: '100vh',
@@ -45,21 +53,21 @@ const Sidebar = () => {
     overflowY: 'auto',
     display: 'flex',
     flexDirection: 'column',
-    alignItems: 'center', // Center items horizontally
-    justifyContent: 'flex-start', // Align items to the top
+    alignItems: 'center', 
+    justifyContent: 'flex-start',
   };
 
   const sidebarLinkStyle = {
     display: 'flex',
-    flexDirection: 'column', // Align icon and label vertically
-    alignItems: 'center', // Center items horizontally
+    flexDirection: 'column', 
+    alignItems: 'center', 
     padding: '10px',
     textDecoration: 'none',
     color: '#212529',
     borderRadius: '4px',
     transition: 'background-color 0.3s',
-    width: '100%', // Ensure the link takes full width
-    boxSizing: 'border-box', // Include padding and border in element's total width and height
+    width: '100%', 
+    boxSizing: 'border-box', 
   };
 
   const sidebarLinkHoverStyle = {
@@ -111,12 +119,13 @@ const Sidebar = () => {
           { label: 'Dashboard', href: '#', icon: <FaHome style={iconStyle} /> },
           { label: 'Profile', href: '#', icon: <FaUser style={iconStyle} /> },
           { label: 'Settings', href: '#', icon: <FaCog style={iconStyle} /> },
-          { label: 'Logout', href: '#', icon: <FaSignOutAlt style={iconStyle} /> },
+          { label: 'Logout', href: '#', icon: <FaSignOutAlt style={iconStyle} />, onClick: handleLogout }, 
         ].map((link, index) => (
           <a
             key={index}
             href={link.href}
             style={sidebarLinkStyle}
+            onClick={link.onClick} 
             onMouseEnter={(e) => e.currentTarget.style.backgroundColor = sidebarLinkHoverStyle.backgroundColor}
             onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
           >
@@ -126,12 +135,8 @@ const Sidebar = () => {
         ))}
       </div>
       <div style={sidebarFooterStyle}>
-        <img
-          src="https://assets.aceternity.com/manu.png"
-          alt="Avatar"
-          style={avatarStyle}
-        />
-        {isHovered && <span style={avatarLabelStyle}>Manu Arora</span>}
+        <FaUserCircle style={avatarStyle} />
+        {isHovered && <span style={avatarLabelStyle}>User"Name"</span>}
       </div>
     </div>
   );
@@ -157,7 +162,7 @@ const CustomerDashboard = () => {
   return (
     <div style={dashboardStyle}>
       <Sidebar />
-      <div style={contentStyle}>
+      <div className="dashboardcontainer" style={contentStyle}>
         <h1 className="text-2xl font-bold mb-4">Dashboard</h1>
         {/* Adding dashboard content here */}
       </div>
