@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { useNavigate } from 'react-router-dom';
 
 function Signup() {
+    const apiKey = process.env.REACT_APP_API_KEY;
     const [firstname, setFirstName] = useState("");
     const [lastname, setLastName] = useState("");
     const [email, setEmail] = useState("");
@@ -46,6 +47,7 @@ function Signup() {
         e.preventDefault();
 
         const payload = {
+            api_key : apiKey,
             user_type: userType,
             user_email: email,
             user_password: password,
@@ -78,7 +80,7 @@ function Signup() {
 
     const handleCancel = () => {
         navigate('/');
-      };
+    };
 
     return (
         <div className="register-container">

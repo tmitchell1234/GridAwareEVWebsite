@@ -1,5 +1,5 @@
 import React from "react";
-import AuroraBackground from "../components/AuroraBackground"; // Adjust the import path as needed
+import AuroraBackground from "../components/AuroraBackground";
 import Login from '../components/Login';
 
 const LoginPage = () => {

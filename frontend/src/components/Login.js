@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState} from 'react';
 import { useNavigate } from 'react-router-dom';
 
 function Login() {
+  const apiKey = process.env.REACT_APP_API_KEY;
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState(null);
@@ -9,14 +10,14 @@ function Login() {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-
     const userData = {
+      api_key : apiKey,
       user_email: email,
       user_password: password,
     };
 
     try {
-      const response = await fetch('http://gridawarecharging.com/api/user_login', {
+      const response = await fetch('https://gridawarecharging.com/api/user_login', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

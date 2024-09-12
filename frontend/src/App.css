@@ -59,15 +59,11 @@
   margin-right: 100px;
 }
 
-.loginButton{
-  padding-left: 100px;
-  padding-right: 50%;
-  border: 10px solid black;
-  size: 20px;
-}
+
 
 
 .login-page{
+  /* margin-bottom: 10%; */
   display: flex;
   justify-content: center;
 }
@@ -94,4 +90,282 @@
   display: flex;
   flex-direction: center;
   padding-left: 43%;
+}
+
+
+
+.logincontainer {
+  margin-top: 18%;
+  margin-left: 37%;
+  justify-content: center;
+  max-width: 400px;
+  padding: 20px;
+  background-color: #ffffff;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  border-radius: 12px;
+}
+
+
+.loginTitle {
+  font-size: 24px;
+  font-weight: bold;
+  color: #333333;
+  text-align: center;
+  margin-bottom: 1px;
+}
+
+.login-page form {
+  display: flex;
+  flex-direction: column;
+}
+
+.form-group {
+  margin-bottom: 5px;
+  margin-top: 5px;
+}
+
+.form-group label {
+  font-size: 14px;
+  color: #555555;
+  margin-bottom: 5px;
+  display: block;
+}
+
+.form-group input {
+  width: 100%;
+  padding: 10px;
+  font-size: 16px;
+  border: 1px solid #dddddd;
+  border-radius: 8px;
+  background-color: #f9f9f9;
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.form-group input:focus {
+  outline: none;
+  border-color: #007bff;
+  box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
+}
+
+
+
+
+
+
+button.loginsubmitbutton {
+  width: 93%;
+  margin-left: 8%;
+  margin-top: 10px;
+  margin-bottom: 10%;
+  padding: 10px;
+  font-size: 16px;
+  background-color: #007bff;
+  color: #ffffff;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  transition: background-color 0.3s ease;
+}
+
+button.loginsubmitbutton:hover {
+  background-color: #0056b3;
+}
+
+button.loginsubmitbutton:active {
+  background-color: #003f7f;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+}
+
+
+button.cancelloginbutton {
+  width: 93%;
+  margin-left: 8%;
+  margin-top: 0px;
+  margin-bottom: 10%;
+  padding: 10px;
+  font-size: 16px;
+  background-color: #ff0000e9;
+  color: #000000;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  transition: background-color 0.3s ease;
+}
+
+button.cancelloginbutton:hover {
+  background-color: #b30000;
+}
+
+button.cancelloginbutton:active {
+  background-color: #7f0000;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+}
+
+
+
+
+
+
+
+button.registersubmitbutton {
+  width: 93%;
+  margin-left: 8%;
+  margin-top: 10px;
+  margin-bottom: 10%;
+  padding: 10px;
+  font-size: 16px;
+  background-color: #007bff;
+  color: #ffffff;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  transition: background-color 0.3s ease;
+}
+
+button.registersubmitbutton:hover {
+  background-color: #0056b3;
+}
+
+button.registersubmitbutton:active {
+  background-color: #003f7f;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+}
+
+
+button.cancelregistrationbutton {
+  width: 93%;
+  margin-left: 8%;
+  margin-top: 0px;
+  margin-bottom: 10%;
+  padding: 10px;
+  font-size: 16px;
+  background-color: #ff0000e9;
+  color: #000000;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  transition: background-color 0.3s ease;
+}
+
+button.cancelregistrationbutton:hover {
+  background-color: #b30000;
+}
+
+button.cancelregistrationbutton:active {
+  background-color: #7f0000;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+}
+
+
+
+
+.register-container {
+  max-width: 400px;
+  margin: 0 auto;
+  padding: 50px;
+  padding-right: 5%;
+  margin-top: 6%;
+  align-items: center;
+  background-color: #ffffff;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  border-radius: 12px;
+}
+
+.registerTitle {
+  text-align: center;
+  font-size: 24px;
+  margin-bottom: 20px;
+}
+
+.register-page {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.form-group {
+  margin-bottom: 15px;
+}
+
+.user-type-options {
+  display: flex;
+  gap: 10px;
+}
+
+
+
+
+
+@layer base {
+  :root {
+    --chart-1: 12 76% 61%;
+    --chart-2: 173 58% 39%;
+    --chart-3: 197 37% 24%;
+    --chart-4: 43 74% 66%;
+    --chart-5: 27 87% 67%;
+  }
+
+  .dark {
+    --chart-1: 220 70% 50%;
+    --chart-2: 160 60% 45%;
+    --chart-3: 30 80% 55%;
+    --chart-4: 280 65% 60%;
+    --chart-5: 340 75% 55%;
+  }
+}
+
+
+.frequencyChart {
+  background: rgba(255, 255, 255, 0.5);
+  backdrop-filter: blur(10px);
+  background: linear-gradient(
+    rgba(255, 255, 255, 0.1),
+    rgba(255, 255, 255, 0.2)
+  );
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  width: 36%;
+  flex-direction: column;
+}
+
+.charts-container{
+  /* border: 5px solid black; */
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.frequencyChart h1 {
+  margin-top: 20px; 
+  font-size: 1.5rem; 
+  text-align: center; 
+}
+
+
+.dashboardcontainer{
+  overflow-x: hidden; 
+  overflow-y: auto; 
+  white-space: normal;
+  padding: 20px;
+}
+
+
+.mapContainer{
+  height: 48%;
+  margin-top: 2%;
+  background: rgba(255, 255, 255, 0.5);
+  backdrop-filter: blur(10px);
+  background: linear-gradient(
+    rgba(255, 255, 255, 0.1),
+    rgba(255, 255, 255, 0.2)
+  );
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  border-radius: 10px;
 }

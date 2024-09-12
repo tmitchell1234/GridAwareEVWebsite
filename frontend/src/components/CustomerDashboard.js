@@ -3,6 +3,9 @@ import { FaHome, FaUser, FaCog, FaSignOutAlt, FaUserCircle } from 'react-icons/f
 import logo from '../imgs/Logo.png'; 
 import { useNavigate } from 'react-router-dom';
 import Avatar from 'react-avatar';
+import FrequencyChart from './FrequencyChart';
+import AuroraBackground from "../components/AuroraBackground";
+import DeviceMap  from './DeviceMap';
 
 const Sidebar = () => {
   const [isHovered, setIsHovered] = useState(false);
@@ -165,7 +168,28 @@ const CustomerDashboard = () => {
       <div className="dashboardcontainer" style={contentStyle}>
         <h1 className="text-2xl font-bold mb-4">Dashboard</h1>
         {/* Adding dashboard content here */}
+        <div className="charts-container">
+          <div className="frequencyChart">
+          <h1>Frequency</h1>
+            <FrequencyChart />
+            
+          </div>
+          <div className="frequencyChart">
+            <h1>Frequency</h1>
+            <FrequencyChart />
+          </div>
+          <div className="frequencyChart">
+            <h1>Charging History</h1>
+            <FrequencyChart />
+          </div>
+          
+          
+        </div>
+        <div className='mapContainer'>
+        <DeviceMap bubbleColor="red" />
+        </div> 
       </div>
+      
     </div>
   );
 };
