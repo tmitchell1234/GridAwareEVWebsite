@@ -1,4 +1,4 @@
-import React, { useState} from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 function Login() {
@@ -11,7 +11,7 @@ function Login() {
   const handleSubmit = async (event) => {
     event.preventDefault();
     const userData = {
-      api_key : apiKey,
+      api_key: apiKey,
       user_email: email,
       user_password: password,
     };
@@ -31,10 +31,14 @@ function Login() {
       }
 
       const data = await response.json();
-      console.log('Login successful:', data);
-      // After a successful login, navigate to the Customer Dashboard or organization dashboard
+      // console.log('Login successful:', data);
+
+      // Store the JWT in localStorage
+      localStorage.setItem('jwt', data.token);
+
+      // Navigate to the Customer Dashboard
       navigate('/CustomerDashboardPage');
-      
+
     } catch (error) {
       console.error('Error:', error);
       setError(error.message);
@@ -44,6 +48,7 @@ function Login() {
   const handleCancel = () => {
     navigate('/');
   };
+
   return (
     <div className="logincontainer">
       <h1 className="loginTitle">Login</h1>
@@ -71,8 +76,8 @@ function Login() {
             />
           </div>
           {error && <p style={{ color: 'red' }}>{error}</p>}
-          <button className="loginsubmitbutton"type="submit">Login</button>
-          <button className="cancelloginbutton"type="button" onClick={handleCancel}>Cancel</button>
+          <button className="loginsubmitbutton" type="submit">Login</button>
+          <button className="cancelloginbutton" type="button" onClick={handleCancel}>Cancel</button>
         </form>
       </div>
     </div>

@@ -1,24 +1,14 @@
 import React from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { useAuth0 } from '@auth0/auth0-react';
 import HomePage from './pages/HomePage';
 import LoginPage from './pages/LoginPage';
 import SignupPage from './pages/SignupPage';
 import CustomerDashboardPage from './pages/CustomerDashboardPage';
-import './App.css';
-
-// ProtectedRoute component to handle access control
-const ProtectedRoute = ({ element }) => {
-  const token = localStorage.getItem('jwt');
-
-  // Check if token exists
-  if (!token) {
-    return <Navigate to="/login" />;
-  }
-
-  return element;
-};
 
 function App() {
+  const { isAuthenticated } = useAuth0();
+
   return (
     <BrowserRouter>
       <Routes>
@@ -27,7 +17,7 @@ function App() {
         <Route path="/registration" element={<SignupPage />} />
         <Route
           path="/CustomerDashboardPage"
-          element={<ProtectedRoute element={<CustomerDashboardPage />} />}
+          element={isAuthenticated ? <CustomerDashboardPage /> : <Navigate to="/login" />}
         />
       </Routes>
     </BrowserRouter>

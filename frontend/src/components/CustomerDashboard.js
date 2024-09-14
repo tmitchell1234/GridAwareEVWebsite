@@ -12,8 +12,8 @@ const Sidebar = () => {
   const navigate = useNavigate(); 
 
   const handleLogout = () => {
-    // logout logic: clearing auth tokens
-    navigate('/'); 
+    localStorage.removeItem('jwt');
+    navigate('/');
   };
 
   const sidebarStyle = {
