@@ -57,7 +57,7 @@ function Signup() {
         };
 
         try {
-            const response = await fetch("http://gridawarecharging.com/api/user_create", {
+            const response = await fetch("https://gridawarecharging.com/api/user_create", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
