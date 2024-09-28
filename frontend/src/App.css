@@ -149,15 +149,17 @@
 
 
 
-
+.buttonContainer {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 10px;
+}
 
 
 button.loginsubmitbutton {
-  width: 93%;
-  margin-left: 8%;
-  margin-top: 10px;
-  margin-bottom: 10%;
-  padding: 10px;
+  width: 43%;
+  padding: 10px; 
+  margin-left: 20px;
   font-size: 16px;
   background-color: #007bff;
   color: #ffffff;
@@ -166,6 +168,7 @@ button.loginsubmitbutton {
   cursor: pointer;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
   transition: background-color 0.3s ease;
+  margin-bottom: 5%;
 }
 
 button.loginsubmitbutton:hover {
@@ -177,6 +180,25 @@ button.loginsubmitbutton:active {
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
 }
 
+
+button.forgetPasswordButton {
+  width: 48%;
+  padding: 10px; 
+  margin-left: 3px;
+  font-size: 14px;
+  background-color: #b88e2c;
+  color: #ffffff;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  transition: background-color 0.3s ease;
+  margin-bottom: 5%;
+}
+
+button.forgetPasswordButton:hover {
+  background-color: #876820;
+}
 
 button.cancelloginbutton {
   width: 93%;
@@ -368,4 +390,193 @@ button.cancelregistrationbutton:active {
   );
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
   border-radius: 10px;
+}
+
+
+.usernameProfileContainer{
+  width: 80%;
+  height: 80%;
+  margin: 2rem auto;
+  padding: 1.5rem;
+  background-color: white;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.submitAdminProfileChangeButton{
+  background-color: black;
+  color: white;
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 4px;
+  font-size: 1rem;
+  cursor: pointer;
+}
+
+.submitAdminProfileChangeButton:hover{
+  background-color: #9ec19d;
+  color: black;
+  border: 1px solid black;
+}
+
+.submitAdminProfileChangeButton:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.3);
+}
+
+.DeleteAdminAccountButton{
+  background-color: rgb(255, 0, 0);
+  color: white;
+  padding: 0.5rem 1rem;
+  border: none;
+  margin-left: 84%;
+  border-radius: 4px;
+  font-size: 1rem;
+  cursor: pointer;
+}
+
+.DeleteAdminAccountButton:hover{
+  background-color: rgb(183, 2, 2);
+  color: rgb(255, 255, 255);
+  border: 1px solid black;
+}
+
+.DeleteAdminAccountButton:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.3);
+}
+
+
+
+
+.adminProfileInputFirstName{
+  width: 15%;
+  padding: 0.5rem;
+  margin: 0.5rem 0;
+  font-size: 1rem;
+  border: 1px solid #ddd;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  border-radius: 4px;
+}
+
+.adminProfileInputLastName{
+  width: 15%;
+  padding: 0.5rem;
+  margin-left: 40px;
+  font-size: 1rem;
+  border: 1px solid #ddd;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  border-radius: 4px;
+}
+
+.adminProfileInputOrganizationName{
+  width: 36%;
+  padding: 0.5rem;
+  margin: 0.5rem 0;
+  font-size: 1rem;
+  border: 1px solid #ddd;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  border-radius: 4px;
+}
+
+
+
+.adminProfilePasswordChange{
+  width: 36%;
+  padding: 0.5rem;
+  margin: 0.5rem 0;
+  font-size: 1rem;
+  border: 1px solid #ddd;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  border-radius: 4px;
+}
+
+.resetPasswordOneContainer{
+  margin-top: 18%;
+  margin-left: 37%;
+  justify-content: center;
+  max-width: 400px;
+  padding: 20px;
+  background-color: #ffffff;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  border-radius: 12px;
+}
+
+.EmailForResetPassWordButton{
+  width: 20%;
+  padding: 10px;
+  font-size: 15px;
+  margin-left: 2%;
+  border: 1px solid #ddd;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.resetPassEmailField{
+  width: 50%;
+  padding: 10px;
+  font-size: 16px;
+  border: 1px solid #dddddd;
+  border-radius: 8px;
+  background-color: #f9f9f9;
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.EmailForResetPassWordButton:hover{
+  background-color: rgb(0, 0, 0);
+  color: rgb(255, 255, 255);
+  border: 1px solid black;
+  
+}
+
+.resetPassTwoContainer{
+  margin-top: 18%;
+  margin-left: 37%;
+  justify-content: center;
+  max-width: 400px;
+  padding: 20px;
+  background-color: #ffffff;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  border-radius: 12px;
+}
+
+.ResetPassWordTwoButton{
+  width: 20%;
+  padding: 10px;
+  font-size: 15px;
+  margin-left: 2%;
+  border: 1px solid #ddd;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.ResetPassWordTwoButton:hover{
+  background-color: rgb(0, 0, 0);
+  color: rgb(255, 255, 255);
+  border: 1px solid black;
+  
+}
+
+.newPasswordField{
+  width: 50%;
+  padding: 10px;
+  margin-bottom: 3%;
+  font-size: 16px;
+  border: 1px solid #dddddd;
+  border-radius: 8px;
+  background-color: #f9f9f9;
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.verificationCodeField{
+  width: 50%;
+  padding: 10px;
+  margin-bottom: 3%;
+  font-size: 16px;
+  border: 1px solid #dddddd;
+  border-radius: 8px;
+  background-color: #f9f9f9;
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
 }

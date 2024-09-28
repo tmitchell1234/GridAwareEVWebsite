@@ -1,21 +1,51 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { FaHome, FaUser, FaCog, FaSignOutAlt, FaUserCircle } from 'react-icons/fa';
 import logo from '../imgs/Logo.png'; 
 import { useNavigate } from 'react-router-dom';
 import Avatar from 'react-avatar';
 import FrequencyChart from './FrequencyChart';
-import AuroraBackground from "../components/AuroraBackground";
 import DeviceMap  from './DeviceMap';
+import AdminProfile from './AdminProfile';
 
-const Sidebar = () => {
+const Sidebar = ({ setSelected }) => {
   const [isHovered, setIsHovered] = useState(false);
   const navigate = useNavigate(); 
+  
+  
 
   const handleLogout = () => {
     localStorage.removeItem('jwt');
     navigate('/');
   };
 
+  // display whatever page the user select on the sidebar
+  const handlePageSelection = (label) => {
+    setSelected(label);
+  };
+
+  // Parse and Decode JWT from cookie
+  const UserToken = localStorage.getItem('jwt');
+  function parseJwt(token) {
+    const base64Url = token.split('.')[1];
+    const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/'); 
+    const jsonPayload = decodeURIComponent(atob(base64).split('').map(function(c) {
+      return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+    }).join(''));
+  
+    return JSON.parse(jsonPayload);
+  }
+  const [decodedUserToken, setdecodedUserToken] = useState(parseJwt(UserToken)); 
+
+  useEffect(() => {
+    const UserToken = localStorage.getItem('jwt');
+    const parsedToken = parseJwt(UserToken);
+    setdecodedUserToken(parsedToken);
+  }, [localStorage.getItem('jwt')]);
+  
+  // if(parseJwt(localStorage.getItem('jwt')) !== decodedUserToken) {
+  //   setdecodedUserToken(parseJwt(localStorage.getItem('jwt')));
+  // }
+  //  Styling for the sidebar 
   const sidebarStyle = {
     height: '100vh',
     backgroundColor: '#f8f9fa',
@@ -102,7 +132,7 @@ const Sidebar = () => {
   };
 
   const avatarLabelStyle = {
-    fontSize: '14px',
+    fontSize: '18px',
   };
 
   return (
@@ -119,9 +149,9 @@ const Sidebar = () => {
       </div>
       <div style={sidebarLinksStyle}>
         {[
-          { label: 'Dashboard', href: '#', icon: <FaHome style={iconStyle} /> },
-          { label: 'Profile', href: '#', icon: <FaUser style={iconStyle} /> },
-          { label: 'Settings', href: '#', icon: <FaCog style={iconStyle} /> },
+          { label: 'Dashboard', href: '#', icon: <FaHome style={iconStyle} />,  onClick: () => handlePageSelection('Dashboard')},
+          { label: 'Profile', href: '#', icon: <FaUser style={iconStyle} />,  onClick: () => handlePageSelection('Profile')},
+          { label: 'Settings', href: '#', icon: <FaCog style={iconStyle} />,  onClick: () => handlePageSelection('Settings')},
           { label: 'Logout', href: '#', icon: <FaSignOutAlt style={iconStyle} />, onClick: handleLogout }, 
         ].map((link, index) => (
           <a
@@ -139,13 +169,15 @@ const Sidebar = () => {
       </div>
       <div style={sidebarFooterStyle}>
         <FaUserCircle style={avatarStyle} />
-        {isHovered && <span style={avatarLabelStyle}>User"Name"</span>}
+        {isHovered && <span style={avatarLabelStyle}>{decodedUserToken.user_first_name}</span>}
       </div>
     </div>
   );
 };
 
 const CustomerDashboard = () => {
+  // Set the default page to Dashboard upon loading
+  const [isSelected, setSelected] = useState('Dashboard');
   const dashboardStyle = {
     display: 'flex',
     height: '100vh',
@@ -164,30 +196,47 @@ const CustomerDashboard = () => {
 
   return (
     <div style={dashboardStyle}>
-      <Sidebar />
+      <Sidebar setSelected={setSelected} />
       <div className="dashboardcontainer" style={contentStyle}>
-        <h1 className="text-2xl font-bold mb-4">Dashboard</h1>
-        {/* Adding dashboard content here */}
-        <div className="charts-container">
-          <div className="frequencyChart">
-          <h1>Frequency</h1>
-            <FrequencyChart />
-            
-          </div>
-          <div className="frequencyChart">
-            <h1>Frequency</h1>
-            <FrequencyChart />
-          </div>
-          <div className="frequencyChart">
-            <h1>Charging History</h1>
-            <FrequencyChart />
-          </div>
-          
-          
-        </div>
-        <div className='mapContainer'>
-        <DeviceMap bubbleColor="red" />
-        </div> 
+      {isSelected === "Dashboard" && (
+          <>
+            <h1 className="text-2xl font-bold mb-4">Dashboard</h1>
+            {/* Adding dashboard content here */}
+            <div className="charts-container">
+              <div className="frequencyChart">
+                <h1>Frequency</h1>
+                <FrequencyChart />
+              </div>
+              <div className="frequencyChart">
+                <h1>Frequency</h1>
+                <FrequencyChart />
+              </div>
+              <div className="frequencyChart">
+                <h1>Charging History</h1>
+                <FrequencyChart />
+              </div>
+            </div>
+            <div className='mapContainer'>
+              <DeviceMap bubbleColor="red" />
+            </div>
+          </>
+        )}
+
+        {isSelected === "Profile" && (
+          <>
+            <h1 className="text-2xl font-bold mb-4">Profile</h1>
+            {/* Adding Profile Page content here */}
+            <AdminProfile />
+          </>
+        )}
+
+        {isSelected === "Settings" && (
+          <>
+            <h1 className="text-2xl font-bold mb-4">Settings</h1>
+            {/* Adding Settings Page content here */}
+            <p>This is the settings page content.</p>
+          </>
+        )}
       </div>
       
     </div>

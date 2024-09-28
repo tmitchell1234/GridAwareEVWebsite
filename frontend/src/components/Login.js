@@ -49,6 +49,10 @@ function Login() {
     navigate('/');
   };
 
+  const handlePasswordReset = () => {
+    navigate('/resetPassword');
+  };
+
   return (
     <div className="logincontainer">
       <h1 className="loginTitle">Login</h1>
@@ -76,7 +80,10 @@ function Login() {
             />
           </div>
           {error && <p style={{ color: 'red' }}>{error}</p>}
-          <button className="loginsubmitbutton" type="submit">Login</button>
+            <div className='loginButtonContainer'>
+            <button className="loginsubmitbutton" type="submit">Login</button>
+            <button className="forgetPasswordButton" type="button" onClick={handlePasswordReset}>Reset Password</button>
+          </div>
           <button className="cancelloginbutton" type="button" onClick={handleCancel}>Cancel</button>
         </form>
       </div>
