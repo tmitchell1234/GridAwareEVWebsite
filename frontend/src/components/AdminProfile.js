@@ -150,9 +150,35 @@ const AdminProfile = () => {
         }
     };
 
+    const handleDeleteAccount = async (e) => {
+        // Show a confirmation dialog
+        const isConfirmed = window.confirm("Are you sure you want to delete your account?");
+    
+        if (isConfirmed) {
+            await fetch('https://gridawarecharging.com/api/delete_user_account', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        api_key: apiKey,
+                        user_jwt: UserToken
+                    })
+                })
+                .then(response => {
+                    if (response.ok) {
+                        alert("Account Deleted Successfully.");
+                        window.location.href = "/";
+                    } else {
+                        alert("Failed to delete account, please try again later.");
+                    }
+                });
+        }
+    }
+
     return (
         <div className="usernameProfileContainer">
-            <button type="submit" className='DeleteAdminAccountButton'>Delete Account</button> {/* Delete account - TO DO LATER */}
+            <button type="submit" className='DeleteAdminAccountButton' onClick={handleDeleteAccount}>Delete Account</button> {/* Delete account - TO DO LATER; Remove devices from user or remove user access from device before deleting account */}
             <form onSubmit={handleSubmit}>
                 <div className="inputForAdminProfile">
                     

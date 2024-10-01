@@ -4,6 +4,8 @@ import logo from '../imgs/Logo.png';
 import { useNavigate } from 'react-router-dom';
 import Avatar from 'react-avatar';
 import FrequencyChart from './FrequencyChart';
+import LineChart from './LineChart';
+import BarChart from './BarChart';
 import DeviceMap  from './DeviceMap';
 import AdminProfile from './AdminProfile';
 
@@ -207,13 +209,14 @@ const CustomerDashboard = () => {
                 <h1>Frequency</h1>
                 <FrequencyChart />
               </div>
-              <div className="frequencyChart">
-                <h1>Frequency</h1>
-                <FrequencyChart />
+              <div className="LineChartContainer">
+                <h2>Frequency</h2>
+                <LineChart />
+                {/* <FrequencyChart /> */}
               </div>
-              <div className="frequencyChart">
-                <h1>Charging History</h1>
-                <FrequencyChart />
+              <div className="ChargingHistoryBarChart">
+                <h2 >Charging History</h2>
+                <BarChart />
               </div>
             </div>
             <div className='mapContainer'>
