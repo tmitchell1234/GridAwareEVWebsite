@@ -243,7 +243,7 @@ const CustomerDashboard = () => {
     const fetchData = async () => {
       setIsLoading(true); // Start loading
       try {
-        const data = await getDataInRecentTimeInterval(devices[0].device_mac_address, 30000.0);
+        const data = await getDataInRecentTimeInterval(devices[0].device_mac_address, 300000.0);
         setDeviceDataInRecentTime(data);
       } catch (error) {
         console.error("Error fetching data:", error);
