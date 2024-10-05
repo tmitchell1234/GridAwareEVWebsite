@@ -8,6 +8,7 @@ import LineChart from './LineChart';
 import BarChart from './BarChart';
 import DeviceMap  from './DeviceMap';
 import AdminProfile from './AdminProfile';
+import { useDeviceContext } from './DeviceContent';
 
 const Sidebar = ({ setSelected }) => {
   const [isHovered, setIsHovered] = useState(false);
@@ -177,9 +178,16 @@ const Sidebar = ({ setSelected }) => {
   );
 };
 
+
+
 const CustomerDashboard = () => {
-  // Set the default page to Dashboard upon loading
   const [isSelected, setSelected] = useState('Dashboard');
+  // const [devices, setDevices] = useState([]); 
+  // const [deviceDataInRecentTime, setDeviceDataInRecentTime] = useState([]); 
+  const apiKey = process.env.REACT_APP_API_KEY; 
+  const { devices = [], setDevices, deviceDataInRecentTime = [], setDeviceDataInRecentTime } = useDeviceContext();
+  const [isLoading, setIsLoading] = useState(true);
+  
   const dashboardStyle = {
     display: 'flex',
     height: '100vh',
@@ -196,52 +204,165 @@ const CustomerDashboard = () => {
     overflow: 'auto',
   };
 
+  // Function to fetch user devices
+  const getUserDevices = async () => {
+    const userData = {
+      api_key: apiKey,
+      user_jwt: localStorage.getItem('jwt'),
+    };
+
+    try {
+      const response = await fetch('https://gridawarecharging.com/api/get_devices_for_user', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(userData),
+      });
+
+      if (!response.ok) {
+        alert('Failed to retrieve user devices.');
+        return;
+      }
+
+      const data = await response.json();
+      // console.log('User devices:', data);
+      setDevices(data); // Store devices in state
+      // logMacAddress();
+    } catch (error) {
+      console.error('Error:', error);
+    }
+  };
+
+  // Fetch devices on component mount
+  useEffect(() => {
+    getUserDevices();
+  }, []);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      setIsLoading(true); // Start loading
+      try {
+        const data = await getDataInRecentTimeInterval(devices[0].device_mac_address, 30000.0);
+        setDeviceDataInRecentTime(data);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      } finally {
+        setIsLoading(false); // End loading
+      }
+    };
+
+    fetchData();
+  }, [devices]);
+
+
+  // useEffect(() => {
+  //   console.log("Here");
+  //   if(devices.length > 0){
+  //     setDeviceDataInRecentTime(getDataInRecentTimeInterval(devices[0].device_mac_address, 30000.0));
+  //     console.log('Device data in recent time:', deviceDataInRecentTime);
+  //   }
+  // }, []);
+  
+  // const logMacAddress = () => {
+  //   if(devices){
+  //     console.log(devices[0].device_mac_address);
+  //     console.log(devices.length);
+  //   }
+    
+  // }
+
+
+  const getDataInRecentTimeInterval = async (deviceMAC, timeSeconds) => {
+    const userJWT = localStorage.getItem('jwt');
+    const requestData = {
+      api_key: apiKey,
+      user_jwt: userJWT,
+      device_mac_address: deviceMAC,
+      time_seconds: timeSeconds
+    };
+
+    // console.log('Request data here :', requestData);
+    try {
+      const response = await fetch('https://gridawarecharging.com/api/get_data_in_recent_time_interval', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(requestData),
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+
+        if (data.length > 0) {
+          // console.log('Measurements:', data);
+          return data; 
+        } else {
+          console.log('No measurements found in the time interval.');
+          return []; 
+        }
+      } else {
+        console.error('Error retrieving data:', response.status);
+        alert('Failed to retrieve data. Status code: ' + response.status);
+      }
+    } catch (error) {
+      console.error('Error during the fetch operation:', error);
+      alert('Error retrieving data.');
+    }
+  };
+
+
   return (
     <div style={dashboardStyle}>
       <Sidebar setSelected={setSelected} />
       <div className="dashboardcontainer" style={contentStyle}>
-      {isSelected === "Dashboard" && (
+        {isSelected === 'Dashboard' && (
           <>
+          {isLoading ? ( // adding a loading animation hereee  while loading devices readings 
+        <p>Loading data...</p> // Optional loading message
+      ) : (
+        <>
             <h1 className="text-2xl font-bold mb-4">Dashboard</h1>
-            {/* Adding dashboard content here */}
+            
+            
             <div className="charts-container">
               <div className="frequencyChart">
-                <h1>Frequency</h1>
+                <h1>Voltage</h1>
+                
                 <FrequencyChart />
               </div>
               <div className="LineChartContainer">
                 <h2>Frequency</h2>
                 <LineChart />
-                {/* <FrequencyChart /> */}
               </div>
               <div className="ChargingHistoryBarChart">
-                <h2 >Charging History</h2>
+                <h2>Charging History</h2>
                 <BarChart />
               </div>
             </div>
-            <div className='mapContainer'>
+            </>
+      )}
+            <div className="mapContainer">
               <DeviceMap bubbleColor="red" />
             </div>
           </>
         )}
 
-        {isSelected === "Profile" && (
+        {isSelected === 'Profile' && (
           <>
             <h1 className="text-2xl font-bold mb-4">Profile</h1>
-            {/* Adding Profile Page content here */}
             <AdminProfile />
           </>
         )}
 
-        {isSelected === "Settings" && (
+        {isSelected === 'Settings' && (
           <>
             <h1 className="text-2xl font-bold mb-4">Settings</h1>
-            {/* Adding Settings Page content here */}
             <p>This is the settings page content.</p>
           </>
         )}
       </div>
-      
     </div>
   );
 };
