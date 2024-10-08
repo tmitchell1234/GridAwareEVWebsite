@@ -9,7 +9,7 @@ import { useDeviceContext } from './DeviceContent';
 // Being used to display Charging History
 function CustomBarChart() {
   const chartContainerRef = useRef(null);
-  const [containerWidth, setContainerWidth] = useState(500);
+  const [containerWidth, setContainerWidth] = useState(250);
   const { deviceDataInRecentTime } = useDeviceContext();
   const dateShowing = [];
 
@@ -43,21 +43,38 @@ function CustomBarChart() {
   const chartData = [];
 
   // console.log(deviceDataInRecentTime.length);
-  deviceDataInRecentTime.forEach((device) => {
+  // Start from the last element and move backward to make sure I grab the lastest information available
+  for (let i = deviceDataInRecentTime.length - 1; i >= 0; i--) {
+    const device = deviceDataInRecentTime[i];
 
+    // only displaying 10 data points, will allow users to choose how far back they want to see data
     if (chartData.length < 10) {
-      
       if (chartData.length > 0 && device.is_charging !== (chartData[chartData.length - 1].is_charging === "Charging")) {
-        // console.log("Here");
+        // Push the data if charging status changes
         chartData.push({
           month: formatToTime(device.time), 
           desktop: device.is_charging ? 5 : 1,
           is_charging: device.is_charging ? "Charging" : "Not Charging"
         });
-        if(chartData.length === 10) {
+
+        // Store the date for the first pushed data
+        if (chartData.length === 10) {
           dateShowing.push(device.time);
         }
-        
+
+      }// will make replace the last data in array to only display when the charging status changed since we are going inreverse o get the most recent data
+      else if (chartData.length > 0 && device.is_charging === (chartData[chartData.length - 1].is_charging === "Charging")) {
+        chartData[chartData.length - 1] = {
+          month: formatToTime(device.time), 
+          desktop: device.is_charging ? 5 : 1,
+          is_charging: device.is_charging ? "Charging" : "Not Charging"
+        };
+
+        // Store the date for the first pushed data
+        if (chartData.length === 10) {
+          dateShowing.push(device.time);
+        }
+
       }
       else if (chartData.length === 0) {
         dateShowing.push(device.time);
@@ -67,12 +84,12 @@ function CustomBarChart() {
           is_charging: device.is_charging ? "Charging" : "Not Charging"
         });
       }
-    } 
-    else {
-      // console.log("count is 10");
-      return;
+    } else {
+      break;
     }
-  });
+  }
+  // reversing to show the data in ascending order
+  chartData.reverse();
 
   const formatDateTime = (date) => {
     // console.log("Input date: ", date);
@@ -90,18 +107,10 @@ function CustomBarChart() {
     return date.toLocaleString('en-US', options); 
   };
 
-  // Create formatted strings
-  const formattedFirstDate = formatDateTime(new Date(dateShowing[0]));
-  const formattedLastDate = formatDateTime(new Date(dateShowing[1]));
+  // Create formatted strings to show the chart dates
+  const formattedFirstDate = formatDateTime(new Date(dateShowing[1]));
+  const formattedLastDate = formatDateTime(new Date(dateShowing[0]));
   // console.log(dateShowing);
-
-  // To display the date in frequency title
-  const dates = deviceDataInRecentTime
-    .slice(-10)
-    .map(device => new Date(device.time))
-    .filter(date => !isNaN(date.getTime())); // Filter out invalid dates
-
-  dates.sort((a, b) => a - b); // Sort in ascending order
 
   return (
     <div className="card" ref={chartContainerRef}>
@@ -112,7 +121,7 @@ function CustomBarChart() {
       <div className="card-content">
         <RechartsBarChart
           width={containerWidth}
-          height={200}
+          height={280}
           data={chartData}
           layout="vertical"
           margin={{ left: -5 }}
@@ -131,20 +140,20 @@ function CustomBarChart() {
           <Tooltip 
             formatter={(value, name, props) => {
               const { is_charging } = props.payload; // Access is_charging from props
-              return [`${is_charging}`]; // Display only is_charging
+              return [`${is_charging}`]; // Display only charging status
             }} 
           />
           <Bar dataKey="desktop" fill="teal" radius={5} />
         </RechartsBarChart>
       </div>
-      <div className="card-footer">
+      {/* <div className="card-footer">
         <div className="flex gap-2 font-medium">
           Trending up by 5.2% this month <TrendingUp className="h-4 w-4" />
         </div>
         <div className="text-muted">
           Showing total frequency for the last 6 months
         </div>
-      </div>
+      </div> */}
     </div>
   );
 }

@@ -377,7 +377,7 @@ button.cancelregistrationbutton:active {
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
   border-radius: 10px;
   display: flex;
-  width: 36%;
+  width: 55%;
   flex-direction: column;
   padding: 1%;
 }
@@ -394,7 +394,7 @@ button.cancelregistrationbutton:active {
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
   border-radius: 10px;
   display: flex;
-  width: 32%;
+  width: 15%;
   flex-direction: column;
   padding: 1%;
 }

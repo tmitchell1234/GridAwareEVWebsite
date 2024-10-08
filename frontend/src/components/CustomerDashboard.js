@@ -9,6 +9,8 @@ import BarChart from './BarChart';
 import DeviceMap  from './DeviceMap';
 import AdminProfile from './AdminProfile';
 import { useDeviceContext } from './DeviceContent';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faGear } from '@fortawesome/free-solid-svg-icons';
 
 const Sidebar = ({ setSelected }) => {
   const [isHovered, setIsHovered] = useState(false);
@@ -243,7 +245,7 @@ const CustomerDashboard = () => {
     const fetchData = async () => {
       setIsLoading(true); // Start loading
       try {
-        const data = await getDataInRecentTimeInterval(devices[0].device_mac_address, 300000.0);
+        const data = await getDataInRecentTimeInterval(devices[0].device_mac_address, 3600.0);
         setDeviceDataInRecentTime(data);
       } catch (error) {
         console.error("Error fetching data:", error);
@@ -254,6 +256,35 @@ const CustomerDashboard = () => {
 
     fetchData();
   }, [devices]);
+
+
+
+  // fetching new data to display to users every couple seconds.
+  useEffect(() => {
+    let intervalId;
+
+    const fetchNewData = async () => {
+      if (!isLoading && devices && devices.length > 0) {
+        try {
+          const data = await getDataInRecentTimeInterval(devices[0].device_mac_address, 3600.0); //last hour hours
+          setDeviceDataInRecentTime(data);
+        } catch (error) {
+          console.error("Error fetching data:", error);
+        }
+      }
+    };
+
+    // Fetch data immediately, then every 2 seconds
+    fetchNewData();
+    intervalId = setInterval(fetchNewData, 3000); // Fetch every 3 seconds
+
+    // Clean up interval on component unmount
+    return () => clearInterval(intervalId);
+  }, [devices, isLoading]);
+
+
+
+
 
 
   // useEffect(() => {
@@ -320,7 +351,7 @@ const CustomerDashboard = () => {
         {isSelected === 'Dashboard' && (
           <>
           {isLoading ? ( // adding a loading animation hereee  while loading devices readings 
-        <p>Loading data...</p> // Optional loading message
+        <p>Loading data...</p> 
       ) : (
         <>
             <h1 className="text-2xl font-bold mb-4">Dashboard</h1>
@@ -328,16 +359,71 @@ const CustomerDashboard = () => {
             
             <div className="charts-container">
               <div className="frequencyChart">
-                <h1>Voltage</h1>
                 
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                <h2 style={{ clear: 'left' }}>Voltage</h2>
+                <button
+                  style={{ 
+                    background: 'transparent', 
+                    border: 'none', 
+                    width: '28px', 
+                    height: '28px',
+                    cursor: 'pointer',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    borderRadius: '50%', 
+                  }}
+                  className="VoltageSettings"
+                >
+                  <FontAwesomeIcon icon={faGear} style={{ fontSize: '28px', padding: '0' }} />
+                </button>
+              </div>
                 <FrequencyChart />
               </div>
               <div className="LineChartContainer">
-                <h2>Frequency</h2>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                  <h2 style={{ clear: 'left' }}>Frequency</h2>
+                  <button
+                    style={{ 
+                      background: 'transparent', 
+                      border: 'none', 
+                      width: '28px', 
+                      height: '28px',
+                      cursor: 'pointer',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      borderRadius: '50%', 
+                    }}
+                    className="FrequencySettings"
+                  >
+                    <FontAwesomeIcon icon={faGear} style={{ fontSize: '28px', padding: '0' }} />
+                  </button>
+                </div>
+                
                 <LineChart />
               </div>
               <div className="ChargingHistoryBarChart">
-                <h2>Charging History</h2>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                  <h2 style={{ clear: 'left' }}>Charging History</h2>
+                  <button
+                    style={{ 
+                      background: 'transparent', 
+                      border: 'none', 
+                      width: '28px', 
+                      height: '28px',
+                      cursor: 'pointer',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      borderRadius: '50%', 
+                    }}
+                    className="ChargingHistorySettings"
+                  >
+                    <FontAwesomeIcon icon={faGear} style={{ fontSize: '28px', padding: '0' }} />
+                  </button>
+                </div>
                 <BarChart />
               </div>
             </div>
