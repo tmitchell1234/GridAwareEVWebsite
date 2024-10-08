@@ -245,7 +245,7 @@ const CustomerDashboard = () => {
     const fetchData = async () => {
       setIsLoading(true); // Start loading
       try {
-        const data = await getDataInRecentTimeInterval(devices[0].device_mac_address, 3600.0);
+        const data = await getDataInRecentTimeInterval(devices[0].device_mac_address, 20.0);
         setDeviceDataInRecentTime(data);
       } catch (error) {
         console.error("Error fetching data:", error);
@@ -266,8 +266,9 @@ const CustomerDashboard = () => {
     const fetchNewData = async () => {
       if (!isLoading && devices && devices.length > 0) {
         try {
-          const data = await getDataInRecentTimeInterval(devices[0].device_mac_address, 3600.0); //last hour hours
+          const data = await getDataInRecentTimeInterval(devices[0].device_mac_address, 20.0); //last 20 seconds
           setDeviceDataInRecentTime(data);
+          // console.log('Device data in recent time:', deviceDataInRecentTime);
         } catch (error) {
           console.error("Error fetching data:", error);
         }
@@ -276,7 +277,7 @@ const CustomerDashboard = () => {
 
     // Fetch data immediately, then every 2 seconds
     fetchNewData();
-    intervalId = setInterval(fetchNewData, 3000); // Fetch every 3 seconds
+    intervalId = setInterval(fetchNewData, 300); // Fetch every 3 seconds
 
     // Clean up interval on component unmount
     return () => clearInterval(intervalId);
