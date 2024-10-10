@@ -64,12 +64,12 @@ function FrequencyChart() {
 
   const data = [];
 
-
+  deviceDataInRecentTime.sort((a, b) => new Date(a.time) - new Date(b.time)); // Sort by time (oldest to newest)
   for (let i = deviceDataInRecentTime.length - 1; i >= 0; i--) {
     const device = deviceDataInRecentTime[i];
     
     // only displaying 10 data points, will allow users to choose how far back they want to see data
-    if (data.length < 10) {
+    if (data.length < 60) {
       if (data.length > 0 && device.voltage !== data[data.length - 1].voltage) {
         // Push the data if charging status changes
         data.push({
@@ -78,7 +78,7 @@ function FrequencyChart() {
         });
     
         // Store the date for the first pushed data
-        if (data.length === 10) {
+        if (data.length === 60) {
           dateShowing.push(device.time);
         }
     
@@ -91,7 +91,7 @@ function FrequencyChart() {
         };
     
         // Store the date for the first pushed data
-        if (data.length === 10) {
+        if (data.length === 60) {
           dateShowing.push(device.time);
         }
     
@@ -138,7 +138,7 @@ function FrequencyChart() {
         {/* <p>January - June 2024</p> */}
         <p>{`${formattedFirstDate} - ${formattedLastDate}`}</p>
       </div>
-      <ResponsiveContainer width={containerWidth} height={300}>
+      <ResponsiveContainer width="100%" height={300}>
         <BarChart data={data} margin={{ left: 0, right: 0 }}>
           <XAxis dataKey="name" />
           <YAxis />

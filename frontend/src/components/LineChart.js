@@ -43,12 +43,12 @@ function LineChart() {
 
 
   const chartData = [];
-
+  deviceDataInRecentTime.sort((a, b) => new Date(a.time) - new Date(b.time)); // Sort by time (oldest to newest)
   for (let i = deviceDataInRecentTime.length - 1; i >= 0; i--) {
     const device = deviceDataInRecentTime[i];
     
     // only displaying 10 data points, will allow users to choose how far back they want to see data
-    if (chartData.length < 10) {
+    if (chartData.length < 200) {
       if (chartData.length > 0 && device.frequency !== chartData[chartData.length - 1].frequency) {
         // Push the data if charging status changes
         chartData.push({
@@ -57,7 +57,7 @@ function LineChart() {
         });
     
         // Store the date for the first pushed data
-        if (chartData.length === 10) {
+        if (chartData.length === 200) {
           dateShowing.push(device.time);
         }
     
@@ -69,7 +69,7 @@ function LineChart() {
         };
     
         // Store the date for the first pushed data
-        if (chartData.length === 10) {
+        if (chartData.length === 200) {
           dateShowing.push(device.time);
         }
     
@@ -125,7 +125,7 @@ function LineChart() {
             axisLine={false}
             tickMargin={0}
             tickFormatter={(value) => value.slice(0, 8)}
-            interval={1} // for every ticks
+            interval={50} // for every ticks
           />
           <YAxis
             tickLine={false} 

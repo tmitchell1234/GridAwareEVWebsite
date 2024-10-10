@@ -44,11 +44,12 @@ function CustomBarChart() {
 
   // console.log(deviceDataInRecentTime.length);
   // Start from the last element and move backward to make sure I grab the lastest information available
+  deviceDataInRecentTime.sort((a, b) => new Date(a.time) - new Date(b.time)); // Sort by time (oldest to newest)
   for (let i = deviceDataInRecentTime.length - 1; i >= 0; i--) {
     const device = deviceDataInRecentTime[i];
 
     // only displaying 10 data points, will allow users to choose how far back they want to see data
-    if (chartData.length < 10) {
+    if (chartData.length < 20) {
       if (chartData.length > 0 && device.is_charging !== (chartData[chartData.length - 1].is_charging === "Charging")) {
         // Push the data if charging status changes
         chartData.push({
@@ -58,7 +59,7 @@ function CustomBarChart() {
         });
 
         // Store the date for the first pushed data
-        if (chartData.length === 10) {
+        if (chartData.length === 20) {
           dateShowing.push(device.time);
         }
 
@@ -71,7 +72,7 @@ function CustomBarChart() {
         };
 
         // Store the date for the first pushed data
-        if (chartData.length === 10) {
+        if (chartData.length === 20) {
           dateShowing.push(device.time);
         }
 
@@ -124,7 +125,7 @@ function CustomBarChart() {
           height={280}
           data={chartData}
           layout="vertical"
-          margin={{ left: -5 }}
+          margin={{ left: -2 }}
         >
           <CartesianGrid vertical={false} />
           <XAxis type="number" hide />

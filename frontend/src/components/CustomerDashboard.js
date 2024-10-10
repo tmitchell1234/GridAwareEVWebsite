@@ -253,8 +253,10 @@ const CustomerDashboard = () => {
         setIsLoading(false); // End loading
       }
     };
-
-    fetchData();
+    if(devices.length > 0){
+      fetchData();
+    }
+    // fetchData();
   }, [devices]);
 
 
@@ -277,7 +279,7 @@ const CustomerDashboard = () => {
 
     // Fetch data immediately, then every 2 seconds
     fetchNewData();
-    intervalId = setInterval(fetchNewData, 300); // Fetch every 3 seconds
+    intervalId = setInterval(fetchNewData, 2000); // Fetch every second seconds
 
     // Clean up interval on component unmount
     return () => clearInterval(intervalId);
