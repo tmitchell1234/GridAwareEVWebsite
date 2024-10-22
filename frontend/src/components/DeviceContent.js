@@ -6,9 +6,15 @@ const DeviceContent = createContext();
 export const DeviceProvider = ({ children }) => {
   const [devices, setDevices] = useState([]);
   const [deviceDataInRecentTime, setDeviceDataInRecentTime] = useState([]);
+  const [deviceDataInTenDays, setDeviceDataInTenDays] = useState([]);
+  const [isVoltageSettingsSelected, setIsVoltageSettingsSelected] = useState(false);
+  const [chartDateChanged, setChartDateChanged] = useState(false);
+  const [tenDaysDataAdded, settenDaysDataAdded] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isTenDaysVoltageSelected, setIsTenDaysVoltageSelected] = useState(false);
 
   return (
-    <DeviceContent.Provider value={{ devices, setDevices, deviceDataInRecentTime, setDeviceDataInRecentTime }}>
+    <DeviceContent.Provider value={{ devices, setDevices, deviceDataInRecentTime, setDeviceDataInRecentTime, isVoltageSettingsSelected, setIsVoltageSettingsSelected, chartDateChanged, setChartDateChanged, tenDaysDataAdded, settenDaysDataAdded, isLoading, setIsLoading, isTenDaysVoltageSelected, setIsTenDaysVoltageSelected, deviceDataInTenDays, setDeviceDataInTenDays}}>
       {children}
     </DeviceContent.Provider>
   );

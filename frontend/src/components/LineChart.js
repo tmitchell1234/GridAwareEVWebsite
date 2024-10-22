@@ -8,8 +8,8 @@ import { map } from "d3";
 // Being used to display Frequency
 function LineChart() {
   const chartContainerRef = useRef(null);
-  const [containerWidth, setContainerWidth] = useState(300);
-  const { deviceDataInRecentTime } = useDeviceContext();
+  const [containerWidth, setContainerWidth] = useState("110%");
+  const { deviceDataInRecentTime, isLoading } = useDeviceContext();
   const dateShowing = [];
 
   useEffect(() => {
@@ -48,7 +48,7 @@ function LineChart() {
     const device = deviceDataInRecentTime[i];
     
     // only displaying 10 data points, will allow users to choose how far back they want to see data
-    if (chartData.length < 200) {
+    if (chartData.length < 300) {
       if (chartData.length > 0 && device.frequency !== chartData[chartData.length - 1].frequency) {
         // Push the data if charging status changes
         chartData.push({
@@ -57,7 +57,7 @@ function LineChart() {
         });
     
         // Store the date for the first pushed data
-        if (chartData.length === 200) {
+        if (chartData.length === 300) {
           dateShowing.push(device.time);
         }
     
@@ -69,7 +69,7 @@ function LineChart() {
         };
     
         // Store the date for the first pushed data
-        if (chartData.length === 200) {
+        if (chartData.length === 300) {
           dateShowing.push(device.time);
         }
     
@@ -108,6 +108,10 @@ function LineChart() {
 
   return (
     <div className="card" ref={chartContainerRef}>
+      {isLoading ? ( // adding a loading animation hereee  while loading devices readings 
+      <p>Loading data...</p> 
+    ) : (
+      <>
       <div className="card-header">
         <p>{`${formattedFirstDate} - ${formattedLastDate}`}</p>
       </div>
@@ -126,12 +130,12 @@ function LineChart() {
             tickMargin={0}
             tickFormatter={(value) => value.slice(0, 8)}
             interval={50} // for every ticks
-          />
+          />// eslint-disable-line
           <YAxis
             tickLine={false} 
             axisLine={false} 
             tickFormatter={(value) => `${value} Hz`} 
-          />
+          />// eslint-disable-line
           <Tooltip formatter={(value) => [`${value} Hz`, 'Frequency']} />
           <Line
             type="monotone"
@@ -142,6 +146,8 @@ function LineChart() {
           />
         </RechartsLineChart>
       </div>
+      </>
+      )}
       {/* <div className="card-footer">
         <div className="flex gap-2 font-medium">
           Trending up by 5.2% this month <TrendingUp className="h-4 w-4" />

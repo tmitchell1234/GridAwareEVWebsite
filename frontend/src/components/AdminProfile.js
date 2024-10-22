@@ -66,8 +66,13 @@ const AdminProfile = () => {
                     new_name: NewAdminFirstName
                 })
             }).then(response => response.json())
-              .then(setProfileUpdatesSuccessfully(true))
-              .catch(error => console.error('Error updating first name:', error));
+            .then(data => {
+                const updatedToken = data.token; // Store the token in updatedToken
+                localStorage.setItem('jwt', updatedToken);
+                setProfileUpdatesSuccessfully(true);
+                alert('Profile updated successfully!');
+            })
+            .catch(error => console.error('Error updating first name:', error));
         }
 
         // Update last name if changed
@@ -83,8 +88,13 @@ const AdminProfile = () => {
                     new_name: NewAdminLastName
                 })
             }).then(response => response.json())
-              .then(setProfileUpdatesSuccessfully(true))
-              .catch(error => console.error('Error updating last name:', error));
+            .then(data => {
+                const updatedToken = data.token; // Store the token in updatedToken
+                localStorage.setItem('jwt', updatedToken);
+                setProfileUpdatesSuccessfully(true);
+                alert('Profile updated successfully!');
+            })
+            .catch(error => console.error('Error updating last name:', error));
         }
 
         // Update organization if changed
@@ -100,8 +110,13 @@ const AdminProfile = () => {
                     new_organization: NewAdminOrganization
                 })
             }).then(response => response.json())
-              .then(setProfileUpdatesSuccessfully(true))
-              .catch(error => console.error('Error updating organization:', error));
+            .then(data => {
+                const updatedToken = data.token; // Store the token in updatedToken
+                localStorage.setItem('jwt', updatedToken);
+                setProfileUpdatesSuccessfully(true);
+                alert('Profile updated successfully!');
+            })
+            .catch(error => console.error('Error updating Organization:', error));
         }
 
         // Update password if changed
@@ -117,7 +132,8 @@ const AdminProfile = () => {
                     new_password: NewAdminPassword
                 })
             }).then(response => response.json())
-              .then(setProfileUpdatesSuccessfully(true))
+            .then(setProfileUpdatesSuccessfully(true))
+            .then(alert('Profile updated successfully!'))
               .catch(error => console.error('Error updating password:', error));
         }
 
@@ -131,21 +147,21 @@ const AdminProfile = () => {
                 password: NewAdminPassword
             });
             
-            const oldToken = UserToken;
+            // const oldToken = UserToken;
 
-            decodedUserToken.user_first_name = NewAdminFirstName;
-            decodedUserToken.user_last_name = NewAdminLastName;
-            if (NewAdminOrganization !== AdminOrganization) {
-                decodedUserToken.user_organization = NewAdminOrganization;
-            }
+            // decodedUserToken.user_first_name = NewAdminFirstName;
+            // decodedUserToken.user_last_name = NewAdminLastName;
+            // if (NewAdminOrganization !== AdminOrganization) {
+            //     decodedUserToken.user_organization = NewAdminOrganization;
+            // }
 
-            // Re-encode the modified token
-            // const updatedToken = encodeJwt(decodedUserToken); 
-            const updatedToken = updateJwtWithOldHeaderAndSignature(oldToken, decodedUserToken);
-            // storing the new cookie in storage 
-            localStorage.setItem('jwt', updatedToken);
+            // // Re-encode the modified token
+            // // const updatedToken = encodeJwt(decodedUserToken); 
+            // const updatedToken = updateJwtWithOldHeaderAndSignature(oldToken, decodedUserToken);
+            // // storing the new cookie in storage 
+            // localStorage.setItem('jwt', updatedToken);
             setProfileUpdatesSuccessfully(false)
-            alert('Profile updated successfully!');
+            // alert('Profile updated successfully!');
             // window.location.reload();
         }
     };

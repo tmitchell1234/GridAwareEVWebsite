@@ -6,12 +6,15 @@ import { TrendingUp } from "lucide-react";
 import { useDeviceContext } from './DeviceContent';
 
 
+
 // Being used to display Charging History
 function CustomBarChart() {
   const chartContainerRef = useRef(null);
   const [containerWidth, setContainerWidth] = useState(250);
-  const { deviceDataInRecentTime } = useDeviceContext();
+  const { deviceDataInRecentTime, isTenDaysVoltageSelected, isLoading } = useDeviceContext();
   const dateShowing = [];
+  const [numOfTicks, setNumOfTicks] = useState(0);
+
 
   useEffect(() => {
     if (chartContainerRef.current) {
@@ -115,6 +118,10 @@ function CustomBarChart() {
 
   return (
     <div className="card" ref={chartContainerRef}>
+      {isLoading ? ( // adding a loading animation hereee  while loading devices readings 
+      <p>Loading data...</p> 
+    ) : (
+      <>
       <div className="card-header">
         {/* <p>January - June 2024</p> */}
         <p>{`${formattedFirstDate} - ${formattedLastDate}`}</p>
@@ -128,7 +135,7 @@ function CustomBarChart() {
           margin={{ left: -2 }}
         >
           <CartesianGrid vertical={false} />
-          <XAxis type="number" hide />
+          <XAxis type="number" hide />// eslint-disable-line
           <YAxis
             dataKey="month"
             type="category"
@@ -137,7 +144,7 @@ function CustomBarChart() {
             axisLine={false}
             tickFormatter={(value) => value.slice(0, 5)}
             interval={2}
-          />
+          />// eslint-disable-line
           <Tooltip 
             formatter={(value, name, props) => {
               const { is_charging } = props.payload; // Access is_charging from props
@@ -147,6 +154,8 @@ function CustomBarChart() {
           <Bar dataKey="desktop" fill="teal" radius={5} />
         </RechartsBarChart>
       </div>
+      </>
+      )}
       {/* <div className="card-footer">
         <div className="flex gap-2 font-medium">
           Trending up by 5.2% this month <TrendingUp className="h-4 w-4" />

@@ -11,6 +11,7 @@ import AdminProfile from './AdminProfile';
 import { useDeviceContext } from './DeviceContent';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faGear } from '@fortawesome/free-solid-svg-icons';
+import VoltageChartSetting from './VoltageChartSetting';
 
 const Sidebar = ({ setSelected }) => {
   const [isHovered, setIsHovered] = useState(false);
@@ -187,8 +188,12 @@ const CustomerDashboard = () => {
   // const [devices, setDevices] = useState([]); 
   // const [deviceDataInRecentTime, setDeviceDataInRecentTime] = useState([]); 
   const apiKey = process.env.REACT_APP_API_KEY; 
-  const { devices = [], setDevices, deviceDataInRecentTime = [], setDeviceDataInRecentTime } = useDeviceContext();
-  const [isLoading, setIsLoading] = useState(true);
+  const { devices = [], setDevices, deviceDataInRecentTime = [], setDeviceDataInRecentTime, isVoltageSettingsSelected, setIsVoltageSettingsSelected, chartDateChanged, setChartDateChanged, tenDaysDataAdded, settenDaysDataAdded, isLoading, setIsLoading, isTenDaysVoltageSelected, deviceDataInTenDays, setDeviceDataInTenDays} = useDeviceContext();
+  // const [isLoading, setIsLoading] = useState(true);
+  // const [chartDateChanged, setChartDateChanged] = useState(false);
+  // setIsVoltageSettingsSelected(false);
+
+
   
   const dashboardStyle = {
     display: 'flex',
@@ -253,8 +258,19 @@ const CustomerDashboard = () => {
         setIsLoading(false); // End loading
       }
     };
+
+    const fetchNewData = async () => {
+      try {
+        const data = await getDataInRecentTimeInterval(devices[0].device_mac_address, 20.0);
+        setDeviceDataInRecentTime(data);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
+    };
     if(devices.length > 0){
       fetchData();
+      const intervalId = setInterval(() => fetchNewData(), 2500);
+      return () => clearInterval(intervalId);
     }
     // fetchData();
   }, [devices]);
@@ -265,25 +281,39 @@ const CustomerDashboard = () => {
   useEffect(() => {
     let intervalId;
 
-    const fetchNewData = async () => {
-      if (!isLoading && devices && devices.length > 0) {
+  
+    const fetchNewData = async (duration) => {
+      if (devices && devices.length > 0) {
         try {
-          const data = await getDataInRecentTimeInterval(devices[0].device_mac_address, 20.0); //last 20 seconds
-          setDeviceDataInRecentTime(data);
-          // console.log('Device data in recent time:', deviceDataInRecentTime);
+          const data = await getDataInRecentTimeInterval(devices[0].device_mac_address, duration);
+          
+          if(!tenDaysDataAdded){
+            setDeviceDataInTenDays(data);
+          }
+          else{
+            setDeviceDataInRecentTime(data);
+          }
         } catch (error) {
           console.error("Error fetching data:", error);
+        } finally {
+          setIsLoading(false); // Set loading to false after the fetch completes
         }
       }
     };
 
-    // Fetch data immediately, then every 2 seconds
-    fetchNewData();
-    intervalId = setInterval(fetchNewData, 2000); // Fetch every second seconds
-
+    if (isTenDaysVoltageSelected && !tenDaysDataAdded) {
+      // console.log('Adding 7 days data');
+      fetchNewData(432000.0); // Last 10 days
+      settenDaysDataAdded(true);
+    } else {
+      // Always fetch the last 20 seconds data
+      // console.log('Adding 20 seconds data');
+      fetchNewData(15.0); // Last 20 seconds
+      intervalId = setInterval(() => fetchNewData(15.0), 2500); // Fetch every 2.5 seconds
+    }
     // Clean up interval on component unmount
     return () => clearInterval(intervalId);
-  }, [devices, isLoading]);
+  }, [devices, chartDateChanged, isVoltageSettingsSelected, isLoading]); // Updated dependencies
 
 
 
@@ -346,6 +376,7 @@ const CustomerDashboard = () => {
     }
   };
 
+  
 
   return (
     <div style={dashboardStyle}>
@@ -353,16 +384,14 @@ const CustomerDashboard = () => {
       <div className="dashboardcontainer" style={contentStyle}>
         {isSelected === 'Dashboard' && (
           <>
-          {isLoading ? ( // adding a loading animation hereee  while loading devices readings 
-        <p>Loading data...</p> 
-      ) : (
-        <>
+          
             <h1 className="text-2xl font-bold mb-4">Dashboard</h1>
             
             
             <div className="charts-container">
               <div className="frequencyChart">
-                
+                {!isVoltageSettingsSelected ?(
+                  <>
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                 <h2 style={{ clear: 'left' }}>Voltage</h2>
                 <button
@@ -378,11 +407,18 @@ const CustomerDashboard = () => {
                     borderRadius: '50%', 
                   }}
                   className="VoltageSettings"
+                  onClick={() => setIsVoltageSettingsSelected(true)}
                 >
                   <FontAwesomeIcon icon={faGear} style={{ fontSize: '28px', padding: '0' }} />
                 </button>
               </div>
                 <FrequencyChart />
+                </>
+              ):(
+                <>
+                <VoltageChartSetting />
+                </>
+              )}
               </div>
               <div className="LineChartContainer">
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
@@ -430,8 +466,7 @@ const CustomerDashboard = () => {
                 <BarChart />
               </div>
             </div>
-            </>
-      )}
+            
             <div className="mapContainer">
               <DeviceMap bubbleColor="red" />
             </div>
