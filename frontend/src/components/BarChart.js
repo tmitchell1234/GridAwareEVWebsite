@@ -11,9 +11,24 @@ import { useDeviceContext } from './DeviceContent';
 function CustomBarChart() {
   const chartContainerRef = useRef(null);
   const [containerWidth, setContainerWidth] = useState(250);
-  const { deviceDataInRecentTime, isTenDaysVoltageSelected, isLoading } = useDeviceContext();
+  const { deviceDataInRecentTime, isTenDaysVoltageSelected, isLoading, 
+        isChargingHistoryLoading, isChargingHistoryTenDaysSelected, deviceDataInTenDays
+       } = useDeviceContext();
   const dateShowing = [];
   const [numOfTicks, setNumOfTicks] = useState(0);
+
+  const [timeInterval, setTimeInterval] = useState(50);
+  const [tickSlice, setTickSlice] = useState(8);
+
+  useEffect(() => {
+    if (isChargingHistoryTenDaysSelected) {
+      setTimeInterval(20); 
+      setTickSlice(10);
+    } else {
+      setTimeInterval(2); 
+      setTickSlice(5);
+    }
+  }, [isChargingHistoryTenDaysSelected]);
 
 
   useEffect(() => {
@@ -42,54 +57,126 @@ function CustomBarChart() {
     return new Date(date).toLocaleString('en-US', options); 
   };
 
+  function formatDateTimeWithoutYear(date) {
+    const options = {
+      month: 'long',  
+      day: 'numeric',  
+      hour: 'numeric', 
+      minute: 'numeric', 
+      hour12: true,  
+    };
+  
+    return date.toLocaleString('en-US', options); 
+  }
+
   // Create chart data including is_charging
   const chartData = [];
 
   // console.log(deviceDataInRecentTime.length);
   // Start from the last element and move backward to make sure I grab the lastest information available
   deviceDataInRecentTime.sort((a, b) => new Date(a.time) - new Date(b.time)); // Sort by time (oldest to newest)
-  for (let i = deviceDataInRecentTime.length - 1; i >= 0; i--) {
-    const device = deviceDataInRecentTime[i];
+  // Sort the deviceDataInTenDays by time
+  deviceDataInTenDays.sort((a, b) => new Date(a.time) - new Date(b.time));
 
-    // only displaying 10 data points, will allow users to choose how far back they want to see data
-    if (chartData.length < 20) {
-      if (chartData.length > 0 && device.is_charging !== (chartData[chartData.length - 1].is_charging === "Charging")) {
-        // Push the data if charging status changes
-        chartData.push({
-          month: formatToTime(device.time), 
-          desktop: device.is_charging ? 5 : 1,
-          is_charging: device.is_charging ? "Charging" : "Not Charging"
-        });
+  if (isChargingHistoryTenDaysSelected) {
+    // Use local variables to track transitions
+    let numOfTransitions = 0;
+    let lastDeviceChargingState = deviceDataInTenDays[deviceDataInTenDays.length - 1].is_charging ? "Charging" : "Not Charging";
+    let lastDeviceHour = new Date(deviceDataInTenDays[deviceDataInTenDays.length - 1].time).getHours();
+    let lastDeviceHourStoring = new Date(deviceDataInTenDays[deviceDataInTenDays.length - 1].time);
 
-        // Store the date for the first pushed data
-        if (chartData.length === 20) {
-          dateShowing.push(device.time);
+    // Create a temporary array for the chart data
+    let tempChartData = [];
+
+    // Loop through the deviceDataInTenDays in reverse order
+    for (let i = deviceDataInTenDays.length - 1; i >= 0; i--) {
+      const device = deviceDataInTenDays[i];
+      const currentDeviceHour = new Date(device.time).getHours();
+
+      // If the current hour matches the last recorded hour
+      if (lastDeviceHour === currentDeviceHour) {
+        // If the charging state has changed, count it as a transition
+        if (device.is_charging !== (lastDeviceChargingState === "Charging")) {
+          numOfTransitions++;
         }
 
-      }// will make replace the last data in array to only display when the charging status changed since we are going inreverse o get the most recent data
-      else if (chartData.length > 0 && device.is_charging === (chartData[chartData.length - 1].is_charging === "Charging")) {
-        chartData[chartData.length - 1] = {
-          month: formatToTime(device.time), 
-          desktop: device.is_charging ? 5 : 1,
-          is_charging: device.is_charging ? "Charging" : "Not Charging"
-        };
+        
+        lastDeviceChargingState = device.is_charging ? "Charging" : "Not Charging";
+      } else {
+        // Push the accumulated transitions to the tempChartData array
+        chartData.push({
+          month: formatDateTimeWithoutYear(lastDeviceHourStoring),
+          desktop: numOfTransitions/5, // divide by 5 to make the chart more readable ( lines wouldnt be as long)
+          is_charging: "Halted " + numOfTransitions + " times"
+        });
 
-        // Store the date for the first pushed data
-        if (chartData.length === 20) {
-          dateShowing.push(device.time);
+        if(chartData.length === 1) {
+          dateShowing.push(lastDeviceHourStoring);
         }
 
+        // Reset for the new hour
+        lastDeviceHour = currentDeviceHour;
+        lastDeviceHourStoring = new Date(device.time);
+        numOfTransitions = 0;
+
+        // Update the last device charging state
+        lastDeviceChargingState = device.is_charging ? "Charging" : "Not Charging";
       }
-      else if (chartData.length === 0) {
-        dateShowing.push(device.time);
-        chartData.push({
-          month: formatToTime(device.time), 
-          desktop: device.is_charging ? 5 : 1,
-          is_charging: device.is_charging ? "Charging" : "Not Charging"
-        });
+    }
+
+    // Push any remaining data after the loop
+    chartData.push({
+      month: formatDateTimeWithoutYear(lastDeviceHourStoring),/*formatToTime(lastDeviceHourStoring),*/
+      desktop: numOfTransitions/5, // divide by 5 to make the chart more readable ( lines wouldnt be as long)
+      is_charging: "Halted " + numOfTransitions + " times"
+    });
+
+    dateShowing.push(lastDeviceHourStoring);
+  }
+  else{
+    for (let i = deviceDataInRecentTime.length - 1; i >= 0; i--) {
+      const device = deviceDataInRecentTime[i];
+
+      // only displaying 10 data points, will allow users to choose how far back they want to see data
+      if (chartData.length < 20) {
+        if (chartData.length > 0 && device.is_charging !== (chartData[chartData.length - 1].is_charging === "Charging")) {
+          // Push the data if charging status changes
+          chartData.push({
+            month: formatToTime(device.time), 
+            desktop: device.is_charging ? 5 : 1,
+            is_charging: device.is_charging ? "Charging" : "Not Charging"
+          });
+
+          // Store the date for the first pushed data
+          if (chartData.length === 20) {
+            dateShowing.push(device.time);
+          }
+
+        }// will make replace the last data in array to only display when the charging status changed since we are going inreverse o get the most recent data
+        else if (chartData.length > 0 && device.is_charging === (chartData[chartData.length - 1].is_charging === "Charging")) {
+          chartData[chartData.length - 1] = {
+            month: formatToTime(device.time), 
+            desktop: device.is_charging ? 5 : 1,
+            is_charging: device.is_charging ? "Charging" : "Not Charging"
+          };
+
+          // Store the date for the first pushed data
+          if (chartData.length === 20) {
+            dateShowing.push(device.time);
+          }
+
+        }
+        else if (chartData.length === 0) {
+          dateShowing.push(device.time);
+          chartData.push({
+            month: formatToTime(device.time), 
+            desktop: device.is_charging ? 5 : 1,
+            is_charging: device.is_charging ? "Charging" : "Not Charging"
+          });
+        }
+      } else {
+        break;
       }
-    } else {
-      break;
     }
   }
   // reversing to show the data in ascending order
@@ -118,7 +205,7 @@ function CustomBarChart() {
 
   return (
     <div className="card" ref={chartContainerRef}>
-      {isLoading ? ( // adding a loading animation hereee  while loading devices readings 
+      {isChargingHistoryLoading ? ( // adding a loading animation hereee  while loading devices readings 
       <p>Loading data...</p> 
     ) : (
       <>
@@ -132,7 +219,7 @@ function CustomBarChart() {
           height={280}
           data={chartData}
           layout="vertical"
-          margin={{ left: -2 }}
+          margin={{ left: 11.5 }}
         >
           <CartesianGrid vertical={false} />
           <XAxis type="number" hide />// eslint-disable-line
@@ -142,8 +229,8 @@ function CustomBarChart() {
             tickLine={false}
             tickMargin={10}
             axisLine={false}
-            tickFormatter={(value) => value.slice(0, 5)}
-            interval={2}
+            tickFormatter={(value) => value.slice(0, tickSlice)}
+            interval={timeInterval}
           />// eslint-disable-line
           <Tooltip 
             formatter={(value, name, props) => {

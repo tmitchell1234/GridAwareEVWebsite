@@ -4,8 +4,8 @@ import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer } from "recha
 import { useDeviceContext } from './DeviceContent';
 
 
-// Being used to display Voltage 
-function FrequencyChart() {
+// Being used to display Current
+function CurrentChart() {
   const chartContainerRef = useRef(null);
   const [containerWidth, setContainerWidth] = useState(200); //initial width
   const { deviceDataInRecentTime, isTenDaysVoltageSelected, deviceDataInTenDays, isVoltageChartLoading } = useDeviceContext();
@@ -87,7 +87,7 @@ function FrequencyChart() {
       hour12: true,  
     };
   
-    return date.toLocaleString('en-US', options); 
+    return date.toLocaleString('en-US', options);
   }
 
   const data = [];
@@ -95,7 +95,7 @@ function FrequencyChart() {
   deviceDataInRecentTime.sort((a, b) => new Date(a.time) - new Date(b.time)); // Sort by time (oldest to newest)
   deviceDataInTenDays.sort((a, b) => new Date(a.time) - new Date(b.time));
   if(isTenDaysVoltageSelected) {
-    let accumulatedVoltage = 0;
+    let accumulatedCurrent = 0;
     let count = 0;
     let lastTime = new Date(deviceDataInTenDays[deviceDataInTenDays.length - 1].time); // Start from the most recent time
     
@@ -108,17 +108,17 @@ function FrequencyChart() {
       if (Math.abs(deviceTime - lastTime) >= 8 * 60 * 60 * 1000) {
         if (count > 0) {
           // Calculate the average and push the data
-          const averageVoltage = accumulatedVoltage / count;
+          const averageCurrent = accumulatedCurrent / count;
           data.push({
             //name: formatToTime(lastTime),
             name: formatDateTimeWithoutYear(new Date(device.time)),
-            value: averageVoltage
+            value: averageCurrent
           });
 
           
           
           // Reset accumulation for the next 8 hours
-          accumulatedVoltage = 0;
+          accumulatedCurrent = 0;
           count = 0;
           
           // Update the last time to the current time
@@ -131,18 +131,18 @@ function FrequencyChart() {
       }
       
     
-      // Accumulate voltage for averaging
-      accumulatedVoltage += device.voltage;
+      // Accumulate current for averaging
+      accumulatedCurrent += device.current;
       count++;
     }
     
     //remaining data not yet pushed (for the last interval less than 8 hours)
     if (count > 0) {
       dateShowing.push(lastTime);
-      const averageVoltage = accumulatedVoltage / count;
+      const averageCurrent = accumulatedCurrent / count;
       data.push({
         name: formatDateTimeWithoutYear(new Date(lastTime)),
-        value: averageVoltage
+        value: averageCurrent
       });
     }
   }
@@ -152,11 +152,11 @@ function FrequencyChart() {
       
       // only displaying 10 data points, will allow users to choose how far back they want to see data
       if (data.length < 60) {
-        if (data.length > 0 && device.voltage !== data[data.length - 1].voltage) {
+        if (data.length > 0 && device.current !== data[data.length - 1].current) {
           // Push the data if charging status changes
           data.push({
             name: formatToTime(new Date(device.time)),
-            value: device.voltage,
+            value: device.current,
           });
       
           // Store the date for the first pushed data
@@ -165,11 +165,11 @@ function FrequencyChart() {
           }
       
         } 
-        // will make replace the last data in array to only display when the voltage changed since we are going inreverse o get the most recent data
-        else if (data.length > 0 && device.voltage === data[data.length - 1].voltage) {
+        // will make replace the last data in array to only display when the current changed since we are going inreverse o get the most recent data
+        else if (data.length > 0 && device.current === data[data.length - 1].current) {
           data[data.length - 1] = {
             name: formatToTime(new Date(device.time)),
-            value: device.voltage,
+            value: device.current,
           };
       
           // Store the date for the first pushed data
@@ -182,7 +182,7 @@ function FrequencyChart() {
           dateShowing.push(device.time);
           data.push({
             name: formatToTime(new Date(device.time)),
-            value: device.voltage,
+            value: device.current,
           });
         }
       } else {
@@ -212,7 +212,7 @@ function FrequencyChart() {
         {/* <p>January - June 2024</p> */}
         {isTenDaysVoltageSelected ? (
           <>
-            <p>Showing average voltage for the past 7 days</p>
+            <p>Showing average current for the past 7 days</p>
             <p>{`${formattedFirstDate} - ${formattedLastDate}`}</p>
           </>
         ) : (
@@ -233,4 +233,4 @@ function FrequencyChart() {
   );
 }
 
-export default FrequencyChart;
+export default CurrentChart;

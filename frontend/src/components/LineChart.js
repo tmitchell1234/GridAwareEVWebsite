@@ -9,8 +9,20 @@ import { map } from "d3";
 function LineChart() {
   const chartContainerRef = useRef(null);
   const [containerWidth, setContainerWidth] = useState("110%");
-  const { deviceDataInRecentTime, isLoading } = useDeviceContext();
+  const { deviceDataInRecentTime, isLoading, deviceDataInTenDays, isFrequencyChartLoading, isFrequencyTenDaysSelected } = useDeviceContext();
   const dateShowing = [];
+  const [timeInterval, setTimeInterval] = useState(50);
+  const [tickSlice, setTickSlice] = useState(8);
+
+  useEffect(() => {
+    if (isFrequencyTenDaysSelected) {
+      setTimeInterval(65); 
+      setTickSlice(30);
+    } else {
+      setTimeInterval(50); 
+      setTickSlice(8);
+    }
+  }, [isFrequencyTenDaysSelected]);
 
   useEffect(() => {
     if (chartContainerRef.current) {
@@ -40,49 +52,118 @@ function LineChart() {
     return date.toLocaleString('en-US', options); 
   };
 
+  function formatDateTimeWithoutYear(date) {
+    const options = {
+      month: 'long',  
+      day: 'numeric',  
+      hour: 'numeric', 
+      minute: 'numeric', 
+      hour12: true,  
+    };
+  
+    return date.toLocaleString('en-US', options); 
+  }
+
+
 
 
   const chartData = [];
   deviceDataInRecentTime.sort((a, b) => new Date(a.time) - new Date(b.time)); // Sort by time (oldest to newest)
-  for (let i = deviceDataInRecentTime.length - 1; i >= 0; i--) {
-    const device = deviceDataInRecentTime[i];
+  deviceDataInTenDays.sort((a, b) => new Date(a.time) - new Date(b.time));
+  // average every  10 mins
+  if(isFrequencyTenDaysSelected) {
+    let accumulatedFrequency = 0;
+    let count = 0;
+    let lastTime = new Date(deviceDataInTenDays[deviceDataInTenDays.length - 1].time); // Start from the most recent time
     
-    // only displaying 10 data points, will allow users to choose how far back they want to see data
-    if (chartData.length < 300) {
-      if (chartData.length > 0 && device.frequency !== chartData[chartData.length - 1].frequency) {
-        // Push the data if charging status changes
-        chartData.push({
-          month: formatToTime(new Date(device.time)),
-          desktop: device.frequency,
-        });
-    
-        // Store the date for the first pushed data
-        if (chartData.length === 300) {
-          dateShowing.push(device.time);
+    for (let i = deviceDataInTenDays.length - 1; i >= 0; i--) {
+      const device = deviceDataInTenDays[i];
+      const deviceTime = new Date(device.time);
+      
+      
+      // Check if  10 mins have passed
+      if (Math.abs(deviceTime - lastTime) >= 20 * 60 * 1000) {
+        if (count > 0) {
+          // Calculate the average and push the data
+          const averageFrequency = accumulatedFrequency / count;
+          chartData.push({
+            //name: formatToTime(lastTime),
+            month: formatDateTimeWithoutYear(new Date(device.time)),
+            desktop: averageFrequency
+          });
+
+          
+          
+          // Reset accumulation for the next 8 hours
+          accumulatedFrequency = 0;
+          count = 0;
+          
+          // Update the last time to the current time
+          lastTime = deviceTime;
         }
+      }
+
+      if(chartData.length === 1 && dateShowing.length === 0) {
+        dateShowing.push(lastTime);
+      }
+      
     
-      } // will make replace the last data in array to only display when the frequency changed since we are going inreverse o get the most recent data
-      else if (chartData.length > 0 && device.frequency === chartData[chartData.length - 1].frequency) {
-        chartData[chartData.length - 1] = {
-          month: formatToTime(new Date(device.time)),
-          desktop: device.frequency,
-        };
+      // Accumulate frequency for averaging
+      accumulatedFrequency += device.frequency;
+      count++;
+    }
     
-        // Store the date for the first pushed data
-        if (chartData.length === 300) {
-          dateShowing.push(device.time);
+    //remaining data not yet pushed (for the last interval less than 8 hours)
+    if (count > 0) {
+      dateShowing.push(lastTime);
+      const averageFrequency = accumulatedFrequency / count;
+      chartData.push({
+        month: formatDateTimeWithoutYear(new Date(lastTime)),
+        desktop: averageFrequency
+      });
+    }
+  }
+  else{
+    for (let i = deviceDataInRecentTime.length - 1; i >= 0; i--) {
+      const device = deviceDataInRecentTime[i];
+      
+      // only displaying 10 data points, will allow users to choose how far back they want to see data
+      if (chartData.length < 300) {
+        if (chartData.length > 0 && device.frequency !== chartData[chartData.length - 1].frequency) {
+          // Push the data if charging status changes
+          chartData.push({
+            month: formatToTime(new Date(device.time)),
+            desktop: device.frequency,
+          });
+      
+          // Store the date for the first pushed data
+          if (chartData.length === 300) {
+            dateShowing.push(device.time);
+          }
+      
+        } // will make replace the last data in array to only display when the frequency changed since we are going inreverse o get the most recent data
+        else if (chartData.length > 0 && device.frequency === chartData[chartData.length - 1].frequency) {
+          chartData[chartData.length - 1] = {
+            month: formatToTime(new Date(device.time)),
+            desktop: device.frequency,
+          };
+      
+          // Store the date for the first pushed data
+          if (chartData.length === 300) {
+            dateShowing.push(device.time);
+          }
+      
         }
-    
+        else if (chartData.length === 0) {
+          dateShowing.push(device.time);
+          chartData.push({
+            month: formatToTime(new Date(device.time)),
+            desktop: device.frequency,
+          });
+        }
+      } else {
+        break;
       }
-      else if (chartData.length === 0) {
-        dateShowing.push(device.time);
-        chartData.push({
-          month: formatToTime(new Date(device.time)),
-          desktop: device.frequency,
-        });
-      }
-    } else {
-      break;
     }
   }
   chartData.reverse();
@@ -106,9 +187,11 @@ function LineChart() {
   const formattedFirstDate = formatDateTime(new Date(dateShowing[1]));
   const formattedLastDate = formatDateTime(new Date(dateShowing[0]));
 
+
+
   return (
     <div className="card" ref={chartContainerRef}>
-      {isLoading ? ( // adding a loading animation hereee  while loading devices readings 
+      {isFrequencyChartLoading ? ( // adding a loading animation hereee  while loading devices readings 
       <p>Loading data...</p> 
     ) : (
       <>
@@ -128,8 +211,11 @@ function LineChart() {
             tickLine={false}
             axisLine={false}
             tickMargin={0}
-            tickFormatter={(value) => value.slice(0, 8)}
-            interval={50} // for every ticks
+            // tickFormatter={(value) => value.slice(0, 8)}
+            tickFormatter={(value) => value.slice(0, tickSlice)}
+            // {isFrequencyTenDaysSelected ? {interval: 50} : {interval: 1}}
+            // interval={50} // for every ticks
+            interval={timeInterval}
           />// eslint-disable-line
           <YAxis
             tickLine={false} 

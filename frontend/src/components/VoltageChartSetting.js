@@ -1,10 +1,10 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useDeviceContext } from './DeviceContent';
 
 function VoltageChartSetting() {
   const [selectedDataOption, setSelectedDataOption] = useState(null);
   const [selectedTimeOption, setSelectedTimeOption] = useState(null); 
-  const {isVoltageSettingsSelected, setIsVoltageSettingsSelected, chartDateChanged, setChartDateChanged, isLoading, setIsLoading, isTenDaysVoltageSelected, setIsTenDaysVoltageSelected, settenDaysDataAdded} = useDeviceContext();
+  const {isVoltageSettingsSelected, setIsVoltageSettingsSelected, chartDateChanged, setChartDateChanged, isLoading, setIsLoading, isTenDaysVoltageSelected, setIsTenDaysVoltageSelected, settenDaysDataAdded, isVoltageChartLoading, setIsVoltageChartLoading, isVoltageSelected, setIsVoltageSelected} = useDeviceContext();
 
   const handleDataChange = (option) => {
     setSelectedDataOption(option);
@@ -18,23 +18,47 @@ function VoltageChartSetting() {
     // }
   };
 
+  useEffect(() => {
+    // console.log("10 Days Voltage Selected:", isTenDaysVoltageSelected);
+    if(isVoltageSelected) {
+      setSelectedDataOption("voltage");
+    }else {
+      setSelectedDataOption("current");
+    }
+
+    if(isTenDaysVoltageSelected) {
+      setSelectedTimeOption("10days");
+    }else { 
+      setSelectedTimeOption("live");
+    } 
+
+  }, [isVoltageSelected, isTenDaysVoltageSelected]);
+
   const handleSubmit = () => {
-    // console.log("Submit clicked");
-    // console.log("Selected Data Option:", selectedDataOption);
-    // console.log("Selected Time Option:", selectedTimeOption);
     if(selectedTimeOption === "10days") {
-      setIsLoading(true);
+        setIsVoltageChartLoading(true);
         setChartDateChanged(true);
         setIsTenDaysVoltageSelected(true);
         
         setIsVoltageSettingsSelected(false);
     }
     else if(selectedTimeOption === "live") {
-      setIsLoading(true);
+      setIsVoltageChartLoading(true);
       setIsTenDaysVoltageSelected(false);
       setIsVoltageSettingsSelected(false);
-      // settenDaysDataAdded(false);
        setChartDateChanged(true);
+    }
+
+    if(selectedDataOption === "voltage") {
+      setIsVoltageSelected(true);
+      setIsVoltageChartLoading(true);
+      setIsVoltageSettingsSelected(false);
+      setChartDateChanged(true);
+    }else if(selectedDataOption === "current") {
+      setIsVoltageSelected(false);
+      setIsVoltageChartLoading(true);
+      setIsVoltageSettingsSelected(false);
+      setChartDateChanged(true);
     }
   };
 

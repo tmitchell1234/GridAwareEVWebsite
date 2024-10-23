@@ -11,10 +11,24 @@ export const DeviceProvider = ({ children }) => {
   const [chartDateChanged, setChartDateChanged] = useState(false);
   const [tenDaysDataAdded, settenDaysDataAdded] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const [isVoltageChartLoading, setIsVoltageChartLoading] = useState(true);
   const [isTenDaysVoltageSelected, setIsTenDaysVoltageSelected] = useState(false);
+  const [isVoltageSelected, setIsVoltageSelected] = useState(true);
+  const [isFrequencyChartSettingsSelected, setIsFrequencyChartSettingsSelected] = useState(false);
+  const [isFrequencyChartLoading, setIsFrequencyChartLoading] = useState(true);
+  const [isFrequencyTenDaysSelected, setIsFrequencyTenDaysSelected] = useState(false);
+  const [isChargingHisorySettingsSelected, setIsChargingHisorySettingsSelected] = useState(false);
+  const [isChargingHistoryLoading, setIsChargingHistoryLoading] = useState(true);
+  const [isChargingHistoryTenDaysSelected, setIsChargingHistoryTenDaysSelected] = useState(false);
+  
 
   return (
-    <DeviceContent.Provider value={{ devices, setDevices, deviceDataInRecentTime, setDeviceDataInRecentTime, isVoltageSettingsSelected, setIsVoltageSettingsSelected, chartDateChanged, setChartDateChanged, tenDaysDataAdded, settenDaysDataAdded, isLoading, setIsLoading, isTenDaysVoltageSelected, setIsTenDaysVoltageSelected, deviceDataInTenDays, setDeviceDataInTenDays}}>
+    <DeviceContent.Provider value={{ devices, setDevices, deviceDataInRecentTime, setDeviceDataInRecentTime, isVoltageSettingsSelected, setIsVoltageSettingsSelected, 
+    chartDateChanged, setChartDateChanged, tenDaysDataAdded, settenDaysDataAdded, isLoading, setIsLoading, isTenDaysVoltageSelected, setIsTenDaysVoltageSelected, 
+    deviceDataInTenDays, setDeviceDataInTenDays, isVoltageChartLoading, setIsVoltageChartLoading, isVoltageSelected, setIsVoltageSelected, 
+    isFrequencyChartSettingsSelected, setIsFrequencyChartSettingsSelected, isFrequencyChartLoading, setIsFrequencyChartLoading, isFrequencyTenDaysSelected, setIsFrequencyTenDaysSelected,
+    isChargingHisorySettingsSelected, setIsChargingHisorySettingsSelected, isChargingHistoryLoading, setIsChargingHistoryLoading, isChargingHistoryTenDaysSelected, setIsChargingHistoryTenDaysSelected
+    }}>
       {children}
     </DeviceContent.Provider>
   );

@@ -4,6 +4,7 @@ import logo from '../imgs/Logo.png';
 import { useNavigate } from 'react-router-dom';
 import Avatar from 'react-avatar';
 import FrequencyChart from './FrequencyChart';
+import CurrentChart from './CurrentChart';
 import LineChart from './LineChart';
 import BarChart from './BarChart';
 import DeviceMap  from './DeviceMap';
@@ -12,6 +13,8 @@ import { useDeviceContext } from './DeviceContent';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faGear } from '@fortawesome/free-solid-svg-icons';
 import VoltageChartSetting from './VoltageChartSetting';
+import FrequencyChartSetting from './FrequencyChartSetting';
+import ChargingHistoryChartSettings from './ChargingHistoryChartSettings';
 
 const Sidebar = ({ setSelected }) => {
   const [isHovered, setIsHovered] = useState(false);
@@ -188,7 +191,12 @@ const CustomerDashboard = () => {
   // const [devices, setDevices] = useState([]); 
   // const [deviceDataInRecentTime, setDeviceDataInRecentTime] = useState([]); 
   const apiKey = process.env.REACT_APP_API_KEY; 
-  const { devices = [], setDevices, deviceDataInRecentTime = [], setDeviceDataInRecentTime, isVoltageSettingsSelected, setIsVoltageSettingsSelected, chartDateChanged, setChartDateChanged, tenDaysDataAdded, settenDaysDataAdded, isLoading, setIsLoading, isTenDaysVoltageSelected, deviceDataInTenDays, setDeviceDataInTenDays} = useDeviceContext();
+  const { devices = [], setDevices, deviceDataInRecentTime = [], setDeviceDataInRecentTime, isVoltageSettingsSelected, setIsVoltageSettingsSelected, chartDateChanged, setChartDateChanged, 
+    tenDaysDataAdded, settenDaysDataAdded, isLoading, setIsLoading, isTenDaysVoltageSelected, deviceDataInTenDays, setDeviceDataInTenDays, isVoltageChartLoading, setIsVoltageChartLoading, isVoltageSelected,
+    isFrequencyChartSettingsSelected, setIsFrequencyChartSettingsSelected, isFrequencyChartLoading, setIsFrequencyChartLoading, isFrequencyTenDaysSelected, setIsFrequencyTenDaysSelected,
+    isChargingHisorySettingsSelected, setIsChargingHisorySettingsSelected, isChargingHistoryLoading, setIsChargingHistoryLoading, isChargingHistoryTenDaysSelected, setIsChargingHistoryTenDaysSelected
+  } = useDeviceContext();
+  const [dontFetchData, setDontFetchData] = useState(false);
   // const [isLoading, setIsLoading] = useState(true);
   // const [chartDateChanged, setChartDateChanged] = useState(false);
   // setIsVoltageSettingsSelected(false);
@@ -249,6 +257,9 @@ const CustomerDashboard = () => {
   useEffect(() => {
     const fetchData = async () => {
       setIsLoading(true); // Start loading
+      setIsVoltageChartLoading(true);
+      setIsFrequencyChartLoading(true);
+      setIsChargingHistoryLoading(true);
       try {
         const data = await getDataInRecentTimeInterval(devices[0].device_mac_address, 20.0);
         setDeviceDataInRecentTime(data);
@@ -256,10 +267,13 @@ const CustomerDashboard = () => {
         console.error("Error fetching data:", error);
       } finally {
         setIsLoading(false); // End loading
+        setIsVoltageChartLoading(false);
+        setIsFrequencyChartLoading(false);
+        setIsChargingHistoryLoading(false);
       }
     };
 
-    const fetchNewData = async () => {
+    const fetchNewDData = async () => {
       try {
         const data = await getDataInRecentTimeInterval(devices[0].device_mac_address, 20.0);
         setDeviceDataInRecentTime(data);
@@ -269,12 +283,22 @@ const CustomerDashboard = () => {
     };
     if(devices.length > 0){
       fetchData();
-      const intervalId = setInterval(() => fetchNewData(), 2500);
+      const intervalId = setInterval(() => fetchNewDData(), 2500);
       return () => clearInterval(intervalId);
     }
     // fetchData();
   }, [devices]);
 
+
+  // will be used to not fetch continuous data when user is looking at past 7 days data in all of the charts.
+  useEffect(() => {
+    if(isTenDaysVoltageSelected && isFrequencyTenDaysSelected && isChargingHistoryTenDaysSelected){
+      setDontFetchData(true);
+    }
+    else{
+      setDontFetchData(false);
+    }
+  }, [isTenDaysVoltageSelected, isFrequencyTenDaysSelected, isChargingHistoryTenDaysSelected]);
 
 
   // fetching new data to display to users every couple seconds.
@@ -297,6 +321,9 @@ const CustomerDashboard = () => {
           console.error("Error fetching data:", error);
         } finally {
           setIsLoading(false); // Set loading to false after the fetch completes
+          setIsVoltageChartLoading(false);
+          setIsFrequencyChartLoading(false);
+          setIsChargingHistoryLoading(false);
         }
       }
     };
@@ -305,15 +332,33 @@ const CustomerDashboard = () => {
       // console.log('Adding 7 days data');
       fetchNewData(432000.0); // Last 10 days
       settenDaysDataAdded(true);
+      setIsVoltageChartLoading(false);
+    } else if (isFrequencyTenDaysSelected && !tenDaysDataAdded) {
+      // console.log('Adding 7 days data');
+      fetchNewData(432000.0); // Last 10 days
+      settenDaysDataAdded(true);
+      setIsFrequencyChartLoading(false);
+    } else if (isChargingHistoryTenDaysSelected && !tenDaysDataAdded) {
+      // console.log('Adding 7 days data');
+      fetchNewData(432000.0); // Last 10 days
+      settenDaysDataAdded(true);
+      setIsChargingHistoryLoading(false);
     } else {
       // Always fetch the last 20 seconds data
       // console.log('Adding 20 seconds data');
-      fetchNewData(15.0); // Last 20 seconds
+      if(!dontFetchData){
+        fetchNewData(15.0); // Last 20 seconds
+        // console.log('Fetching new data');
+      }
+      // else{
+      //   console.log('Not fetching new data');
+      // }
       intervalId = setInterval(() => fetchNewData(15.0), 2500); // Fetch every 2.5 seconds
     }
+    
     // Clean up interval on component unmount
     return () => clearInterval(intervalId);
-  }, [devices, chartDateChanged, isVoltageSettingsSelected, isLoading]); // Updated dependencies
+  }, [devices, chartDateChanged, isVoltageSettingsSelected, isChargingHistoryLoading, isFrequencyChartLoading, isVoltageChartLoading]); // Updated dependencies
 
 
 
@@ -393,7 +438,15 @@ const CustomerDashboard = () => {
                 {!isVoltageSettingsSelected ?(
                   <>
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+              {isVoltageSelected ? (
+                <>
                 <h2 style={{ clear: 'left' }}>Voltage</h2>
+                </>
+              ) : (
+                <>
+                <h2 style={{ clear: 'left' }}>Current</h2>
+                </>
+              )}
                 <button
                   style={{ 
                     background: 'transparent', 
@@ -412,7 +465,14 @@ const CustomerDashboard = () => {
                   <FontAwesomeIcon icon={faGear} style={{ fontSize: '28px', padding: '0' }} />
                 </button>
               </div>
-                <FrequencyChart />
+                {isVoltageSelected ? ( // adding a loading animation hereee  while loading devices readings 
+                  <FrequencyChart />
+                ) : (
+                  <CurrentChart />
+                // <>
+                // <p>current here</p>
+                // </>
+                )}
                 </>
               ):(
                 <>
@@ -436,16 +496,36 @@ const CustomerDashboard = () => {
                       borderRadius: '50%', 
                     }}
                     className="FrequencySettings"
+
+                    onClick={() => setIsFrequencyChartSettingsSelected(true)}
                   >
                     <FontAwesomeIcon icon={faGear} style={{ fontSize: '28px', padding: '0' }} />
                   </button>
                 </div>
+                {isFrequencyChartSettingsSelected ? (
+                  <FrequencyChartSetting />
+                ) : (
+                  <>
+                    {isFrequencyTenDaysSelected ? (
+                      <p>Showing average frequency for the past 7 days</p>
+                    ) : (
+                      <></>
+                    )}
+                    <LineChart />
+                  </>
+                )}
+                  
                 
-                <LineChart />
+                
               </div>
               <div className="ChargingHistoryBarChart">
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                  <h2 style={{ clear: 'left' }}>Charging History</h2>
+                  {isChargingHistoryTenDaysSelected ? (
+                          <h2 style={{ clear: 'left' }}>Halting History</h2>
+                        ) : (
+                          <h2 style={{ clear: 'left' }}>Charging History</h2>
+                        )}
+                  
                   <button
                     style={{ 
                       background: 'transparent', 
@@ -459,11 +539,23 @@ const CustomerDashboard = () => {
                       borderRadius: '50%', 
                     }}
                     className="ChargingHistorySettings"
+                    onClick={() => setIsChargingHisorySettingsSelected(true)}
                   >
                     <FontAwesomeIcon icon={faGear} style={{ fontSize: '28px', padding: '0' }} />
                   </button>
                 </div>
-                <BarChart />
+                {isChargingHisorySettingsSelected ? (
+                  <ChargingHistoryChartSettings />
+                ) : (
+                  <>
+                    {isChargingHistoryTenDaysSelected ? (
+                      <p>Showing Halting History for the past 7 days</p>
+                    ) : (
+                      <></>
+                    )}
+                    <BarChart />
+                </>
+                )}
               </div>
             </div>
             
