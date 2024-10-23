@@ -351,7 +351,7 @@ button.cancelregistrationbutton:active {
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
   border-radius: 10px;
   display: flex;
-  width: 30%;
+  width: 37%;
   flex-direction: column;
   padding: 1%;
 }
@@ -363,6 +363,48 @@ button.cancelregistrationbutton:active {
   align-items: center;
   gap: 1%;
   justify-content: space-between; 
+  width: 95vw;
+  overflow-x: auto;
+  white-space: nowrap;
+}
+
+/* .charts-container {
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  gap: 1%;
+  justify-content: flex-start;
+  overflow-x: auto;
+  white-space: nowrap;
+  padding: 10px;
+  
+ 
+  width: 95vw;  
+  max-width: 1500px; 
+  margin: 0 auto;  
+} */
+
+
+.charts-container::-webkit-scrollbar {
+  height: 8px;
+}
+
+.charts-container::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+.charts-container::-webkit-scrollbar-thumb {
+  background: #888;
+  border-radius: 4px;
+}
+
+.charts-container::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
+
+
+.charts-container > * {
+  flex-shrink: 0;
 }
 
 
@@ -377,7 +419,7 @@ button.cancelregistrationbutton:active {
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
   border-radius: 10px;
   display: flex;
-  width: 55%;
+  width: 110%;
   flex-direction: column;
   padding: 1%;
 }
@@ -394,7 +436,7 @@ button.cancelregistrationbutton:active {
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
   border-radius: 10px;
   display: flex;
-  width: 15%;
+  width: 38%;
   flex-direction: column;
   padding: 1%;
 }
@@ -635,3 +677,114 @@ button.cancelregistrationbutton:active {
 }
 
 
+
+
+
+.voltageSettingsContainer h3 {
+  margin: 0; 
+  padding-bottom: 5px;
+}
+
+.currentOrVoltageChartSelection,
+.tenDaysOrLiveSelection {
+  margin-top: 0; 
+}
+
+.row {
+  display: flex;
+  justify-content: flex-start;
+  gap: 10px; 
+}
+
+.CheckboxLabel {
+  display: flex;
+  align-items: center;
+  position: relative;
+  padding-left: 35px;
+  cursor: pointer;
+  font-size: 22px;
+}
+
+.CheckboxLabel input {
+  position: absolute;
+  opacity: 0;
+  cursor: pointer;
+  height: 0;
+  width: 0;
+}
+
+.checkmark {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 25px;
+  width: 25px;
+  background-color: #eee;
+  border-radius: 5px;
+}
+
+.CheckboxLabel input:checked ~ .checkmark {
+  background-color: #2196F3;
+}
+
+.checkmark:after {
+  content: "";
+  position: absolute;
+  display: none;
+}
+
+.CheckboxLabel input:checked ~ .checkmark:after {
+  display: block;
+}
+
+.CheckboxLabel .checkmark:after {
+  left: 9px;
+  top: 5px;
+  width: 5px;
+  height: 10px;
+  border: solid white;
+  border-width: 0 3px 3px 0;
+  transform: rotate(45deg);
+}
+
+
+
+
+.SubmitChartSettingbuttonContaine {
+  margin-top: 20px;
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+.submitChartOrTimeButton,
+.cancelChartOrTimeButton {
+  margin-top: 5%;
+  padding: 10px 20px;
+  font-size: 16px;
+  border: none;
+  cursor: pointer;
+  border-radius: 5px;
+}
+
+.cancelChartOrTimeButton {
+  margin-left: 35%;
+}
+
+.submitChartOrTimeButton {
+  background-color: #4caf50; /* Green */
+  color: white;
+}
+
+.cancelChartOrTimeButton {
+  background-color: #f44336; /* Red */
+  color: white;
+}
+
+.submitChartOrTimeButton:hover {
+  background-color: #45a049;
+}
+
+.cancelChartOrTimeButton:hover {
+  background-color: #d32f2f;
+}
