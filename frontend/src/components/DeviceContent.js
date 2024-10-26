@@ -20,6 +20,10 @@ export const DeviceProvider = ({ children }) => {
   const [isChargingHisorySettingsSelected, setIsChargingHisorySettingsSelected] = useState(false);
   const [isChargingHistoryLoading, setIsChargingHistoryLoading] = useState(true);
   const [isChargingHistoryTenDaysSelected, setIsChargingHistoryTenDaysSelected] = useState(false);
+  const [deviceCordinates, setDeviceCordinates] = useState({});
+  const [isMapLoading, setIsMapLoading] = useState(true);
+  const [deviceLocationsFetched, setDeviceLocationsFetched] = useState(false);
+  const [deviceColors, setDeviceColors] = useState([]);
   
 
   return (
@@ -27,7 +31,8 @@ export const DeviceProvider = ({ children }) => {
     chartDateChanged, setChartDateChanged, tenDaysDataAdded, settenDaysDataAdded, isLoading, setIsLoading, isTenDaysVoltageSelected, setIsTenDaysVoltageSelected, 
     deviceDataInTenDays, setDeviceDataInTenDays, isVoltageChartLoading, setIsVoltageChartLoading, isVoltageSelected, setIsVoltageSelected, 
     isFrequencyChartSettingsSelected, setIsFrequencyChartSettingsSelected, isFrequencyChartLoading, setIsFrequencyChartLoading, isFrequencyTenDaysSelected, setIsFrequencyTenDaysSelected,
-    isChargingHisorySettingsSelected, setIsChargingHisorySettingsSelected, isChargingHistoryLoading, setIsChargingHistoryLoading, isChargingHistoryTenDaysSelected, setIsChargingHistoryTenDaysSelected
+    isChargingHisorySettingsSelected, setIsChargingHisorySettingsSelected, isChargingHistoryLoading, setIsChargingHistoryLoading, isChargingHistoryTenDaysSelected, setIsChargingHistoryTenDaysSelected,
+    deviceCordinates, setDeviceCordinates, isMapLoading, setIsMapLoading, deviceLocationsFetched, setDeviceLocationsFetched, deviceColors, setDeviceColors
     }}>
       {children}
     </DeviceContent.Provider>

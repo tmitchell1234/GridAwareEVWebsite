@@ -223,7 +223,7 @@ function CurrentChart() {
         <BarChart data={data} margin={{ left: 0, right: 0 }}>
           <XAxis dataKey="name" /> // eslint-disable-line
           <YAxis /> // eslint-disable-line
-          <Tooltip />
+          <Tooltip formatter={(value) => `${value} Amps`}/>
           <Bar dataKey="value" fill={barColor} />
         </BarChart>
       </ResponsiveContainer>

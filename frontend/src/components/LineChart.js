@@ -221,6 +221,7 @@ function LineChart() {
             tickLine={false} 
             axisLine={false} 
             tickFormatter={(value) => `${value} Hz`} 
+            domain={[58, 62]}
           />// eslint-disable-line
           <Tooltip formatter={(value) => [`${value} Hz`, 'Frequency']} />
           <Line

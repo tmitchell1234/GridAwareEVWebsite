@@ -25,7 +25,7 @@ function CustomBarChart() {
       setTimeInterval(20); 
       setTickSlice(10);
     } else {
-      setTimeInterval(2); 
+      setTimeInterval(5); 
       setTickSlice(5);
     }
   }, [isChargingHistoryTenDaysSelected]);
@@ -85,10 +85,8 @@ function CustomBarChart() {
     let lastDeviceHour = new Date(deviceDataInTenDays[deviceDataInTenDays.length - 1].time).getHours();
     let lastDeviceHourStoring = new Date(deviceDataInTenDays[deviceDataInTenDays.length - 1].time);
 
-    // Create a temporary array for the chart data
+   
     let tempChartData = [];
-
-    // Loop through the deviceDataInTenDays in reverse order
     for (let i = deviceDataInTenDays.length - 1; i >= 0; i--) {
       const device = deviceDataInTenDays[i];
       const currentDeviceHour = new Date(device.time).getHours();
@@ -134,11 +132,71 @@ function CustomBarChart() {
     dateShowing.push(lastDeviceHourStoring);
   }
   else{
+
+
+    // experimenting to show halting history here for every second
+    // console.log("Device Data in Recent Time: ", deviceDataInRecentTime);
+  //   if (!deviceDataInRecentTime || deviceDataInRecentTime.length === 0) {
+  //     console.error("deviceDataInRecentTime is null or empty");
+  //     return; // or handle the error as needed
+  // }
+  //   let numOfTransitions = 0;
+  //   let lastDeviceChargingState = deviceDataInRecentTime[deviceDataInRecentTime.length - 1].is_charging ? "Charging" : "Not Charging";
+  //   let lastDeviceSecond = new Date(deviceDataInRecentTime[deviceDataInRecentTime.length - 1].time).getSeconds();
+  //   let lastDeviceSecondStoring = new Date(deviceDataInRecentTime[deviceDataInRecentTime.length - 1].time);
+
+  //   for (let i = deviceDataInRecentTime.length - 1; i >= 0; i--) {
+  //     const device = deviceDataInRecentTime[i];
+  //     const currentDeviceSecond = new Date(device.time).getSeconds();
+
+  //     // If the current hour matches the last recorded hour
+  //     if (lastDeviceSecond === currentDeviceSecond) {
+  //       // If the charging state has changed, count it as a transition
+  //       if (device.is_charging !== (lastDeviceChargingState === "Charging")) {
+  //         numOfTransitions++;
+  //       }
+
+        
+  //       lastDeviceChargingState = device.is_charging ? "Charging" : "Not Charging";
+  //     } else {
+  //       // Push the accumulated transitions to the tempChartData array
+  //       chartData.push({
+  //         month: formatDateTimeWithoutYear(lastDeviceSecondStoring),
+  //         desktop: numOfTransitions, 
+  //         is_charging: "Halted " + numOfTransitions + " times"
+  //       });
+
+  //       if(chartData.length === 1) {
+  //         dateShowing.push(lastDeviceSecondStoring);
+  //       }
+
+  //       // Reset for the new hour
+  //       lastDeviceSecond = currentDeviceSecond;
+  //       lastDeviceSecondStoring = new Date(device.time);
+  //       numOfTransitions = 0;
+
+  //       // Update the last device charging state
+  //       lastDeviceChargingState = device.is_charging ? "Charging" : "Not Charging";
+  //     }
+  //   }
+
+  //   // Push any remaining data after the loop
+  //   chartData.push({
+  //     month: formatDateTimeWithoutYear(lastDeviceSecondStoring),/*formatToTime(lastDeviceHourStoring),*/
+  //     desktop: numOfTransitions,
+  //     is_charging: "Halted " + numOfTransitions + " times"
+  //   });
+
+  //   dateShowing.push(lastDeviceSecondStoring);
+    
+
+
+
     for (let i = deviceDataInRecentTime.length - 1; i >= 0; i--) {
       const device = deviceDataInRecentTime[i];
 
       // only displaying 10 data points, will allow users to choose how far back they want to see data
-      if (chartData.length < 20) {
+      if (chartData.length < 21) {
         if (chartData.length > 0 && device.is_charging !== (chartData[chartData.length - 1].is_charging === "Charging")) {
           // Push the data if charging status changes
           chartData.push({
@@ -148,7 +206,7 @@ function CustomBarChart() {
           });
 
           // Store the date for the first pushed data
-          if (chartData.length === 20) {
+          if (chartData.length === 21) {
             dateShowing.push(device.time);
           }
 
@@ -161,7 +219,7 @@ function CustomBarChart() {
           };
 
           // Store the date for the first pushed data
-          if (chartData.length === 20) {
+          if (chartData.length === 21) {
             dateShowing.push(device.time);
           }
 

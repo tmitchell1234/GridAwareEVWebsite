@@ -194,9 +194,15 @@ const CustomerDashboard = () => {
   const { devices = [], setDevices, deviceDataInRecentTime = [], setDeviceDataInRecentTime, isVoltageSettingsSelected, setIsVoltageSettingsSelected, chartDateChanged, setChartDateChanged, 
     tenDaysDataAdded, settenDaysDataAdded, isLoading, setIsLoading, isTenDaysVoltageSelected, deviceDataInTenDays, setDeviceDataInTenDays, isVoltageChartLoading, setIsVoltageChartLoading, isVoltageSelected,
     isFrequencyChartSettingsSelected, setIsFrequencyChartSettingsSelected, isFrequencyChartLoading, setIsFrequencyChartLoading, isFrequencyTenDaysSelected, setIsFrequencyTenDaysSelected,
-    isChargingHisorySettingsSelected, setIsChargingHisorySettingsSelected, isChargingHistoryLoading, setIsChargingHistoryLoading, isChargingHistoryTenDaysSelected, setIsChargingHistoryTenDaysSelected
+    isChargingHisorySettingsSelected, setIsChargingHisorySettingsSelected, isChargingHistoryLoading, setIsChargingHistoryLoading, isChargingHistoryTenDaysSelected, setIsChargingHistoryTenDaysSelected,
+    deviceCordinates, setDeviceCordinates, isMapLoading, setIsMapLoading, deviceLocationsFetched, setDeviceLocationsFetched, deviceColors, setDeviceColors
   } = useDeviceContext();
   const [dontFetchData, setDontFetchData] = useState(false);
+  let deviceCordimates = {};
+  let combinedGeoJSON = {
+    type: 'FeatureCollection',
+    features: []
+  };
   // const [isLoading, setIsLoading] = useState(true);
   // const [chartDateChanged, setChartDateChanged] = useState(false);
   // setIsVoltageSettingsSelected(false);
@@ -261,12 +267,12 @@ const CustomerDashboard = () => {
       setIsFrequencyChartLoading(true);
       setIsChargingHistoryLoading(true);
       try {
-        const data = await getDataInRecentTimeInterval(devices[0].device_mac_address, 20.0);
+        const data = await getDataInRecentTimeInterval(devices[0].device_mac_address, 5.0);
         setDeviceDataInRecentTime(data);
       } catch (error) {
         console.error("Error fetching data:", error);
       } finally {
-        setIsLoading(false); // End loading
+        setIsLoading(false); 
         setIsVoltageChartLoading(false);
         setIsFrequencyChartLoading(false);
         setIsChargingHistoryLoading(false);
@@ -275,7 +281,7 @@ const CustomerDashboard = () => {
 
     const fetchNewDData = async () => {
       try {
-        const data = await getDataInRecentTimeInterval(devices[0].device_mac_address, 20.0);
+        const data = await getDataInRecentTimeInterval(devices[0].device_mac_address, 5.0);
         setDeviceDataInRecentTime(data);
       } catch (error) {
         console.error("Error fetching data:", error);
@@ -283,6 +289,7 @@ const CustomerDashboard = () => {
     };
     if(devices.length > 0){
       fetchData();
+      // console.log('Devices:', devices[0].ip_address);
       const intervalId = setInterval(() => fetchNewDData(), 2500);
       return () => clearInterval(intervalId);
     }
@@ -295,13 +302,17 @@ const CustomerDashboard = () => {
     if(isTenDaysVoltageSelected && isFrequencyTenDaysSelected && isChargingHistoryTenDaysSelected){
       setDontFetchData(true);
     }
+    else if(isSelected !== 'Dashboard'){
+      setDontFetchData(true);
+    }
     else{
       setDontFetchData(false);
     }
-  }, [isTenDaysVoltageSelected, isFrequencyTenDaysSelected, isChargingHistoryTenDaysSelected]);
+    // console.log('Dont fetch data:', dontFetchData);
+  }, [isTenDaysVoltageSelected, isFrequencyTenDaysSelected, isChargingHistoryTenDaysSelected, isSelected]);
 
 
-  // fetching new data to display to users every couple seconds.
+  // fetching new data to display to users every couple seconds.    IF FAILED TO FECTH DATA, DISPLAY MESSAGE THAT DEVICE ISN'T CONNECTED or offline 
   useEffect(() => {
     let intervalId;
 
@@ -353,16 +364,198 @@ const CustomerDashboard = () => {
       // else{
       //   console.log('Not fetching new data');
       // }
-      intervalId = setInterval(() => fetchNewData(15.0), 2500); // Fetch every 2.5 seconds
+      intervalId = setInterval(() => fetchNewData(10.0), 2500); // Fetch every 2.5 seconds
     }
     
     // Clean up interval on component unmount
     return () => clearInterval(intervalId);
-  }, [devices, chartDateChanged, isVoltageSettingsSelected, isChargingHistoryLoading, isFrequencyChartLoading, isVoltageChartLoading]); // Updated dependencies
+  }, [devices, chartDateChanged, isVoltageSettingsSelected, isChargingHistoryLoading, isFrequencyChartLoading, isVoltageChartLoading, tenDaysDataAdded]); // Updated dependencies
 
 
+  // function generatePolygonAroundPoint(long, lat) {
+  //   const centerLon = parseFloat(long);
+  //   const centerLat = parseFloat(lat);
+  //   // turns the coordinates array to a polygon
+  //   const polygonCoordinates = [
+  //     [centerLon, centerLat + 0.5],
+  //     [centerLon + 0.5, centerLat + 0.25],
+  //     [centerLon + 1.0, centerLat],
+  //     [centerLon + 0.5, centerLat - 0.25],
+  //     [centerLon, centerLat - 0.5],
+  //     [centerLon - 0.5, centerLat - 0.25],
+  //     [centerLon - 1.0, centerLat],
+  //     [centerLon - 0.5, centerLat + 0.25],
+  //     [centerLon, centerLat + 0.5],  
+  //   ];
+  
+  //   return [polygonCoordinates];
+  // }
+
+  function generatePolygonAroundPoint(centerLon, centerLat) {
+    const lon = parseFloat(centerLon);
+    const lat = parseFloat(centerLat);
+  
+    // Define incremental changes for longitude and latitude
+    const deltaLon = 0.5;
+    const deltaLat = 0.3;
+  
+    // Approximate a polygon with more points, altering around the center
+    const polygonCoordinates = [
+      [lon, lat + deltaLat * 1.2],
+      [lon + deltaLon * 0.5, lat + deltaLat * 0.7],
+      [lon + deltaLon, lat],
+      [lon + deltaLon * 0.5, lat - deltaLat * 0.7],
+      [lon, lat - deltaLat * 1.2],
+      [lon - deltaLon * 0.5, lat - deltaLat * 0.7],
+      [lon - deltaLon, lat],
+      [lon - deltaLon * 0.5, lat + deltaLat * 0.7],
+      [lon, lat + deltaLat * 1.2],  // Close the loop
+    ];
+  
+    return [polygonCoordinates];
+  }
+
+  // grap IP addresses of devices
+  useEffect(() => {
+    const fetchCoordinates = async () => {
+      let deciesIPAdresses = [];
+      
+
+      if (isSelected === 'Dashboard' && devices.length > 0) {
+        deciesIPAdresses = devices.map((device) => device.ip_address);
+        // console.log('Devices IP Addresses:', deciesIPAdresses);
+
+        for (let index = 0; index < deciesIPAdresses.length; index++) {
+          let deviceIP = deciesIPAdresses[index];
+
+          if (deviceIP === 'UCF') {
+            deviceIP = '132.170.27.91'; // Update IP
+            // console.log('Updated IP Address:', deviceIP);
+          }
+
+          // console.log(" String to get location: ");
+          // console.log('http://www.geoplugin.net/json.gp?ip=${deviceIP}');
+
+          try {
+            // console.log(" Device IP HERRRRRRREEEEEEEEEEEEEE---------: ", deviceIP+".");
+            const response = await fetch(`http://www.geoplugin.net/json.gp?ip=${deviceIP}`);
+            // const URL = `http://www.geoplugin.net/json.gp?ip=`+deviceIP;
+            // const response = await fetch(URL);
+            // console.log(typeof(deviceIP));
+
+            // const response = await fetch(`http://www.geoplugin.net/json.gp?ip=132.170.27.91`);
+            
+            // fetch(`http://www.geoplugin.net/json.gp?ip=132.170.27.91`)
+            // .then(response => response.json())
+            // .then((data) => console.log(data));
+            
+            // console.log("LOOOOKIING FOR THE DATA ABOVE THIS LINE HERE EEEEEEEEEEEE");
+
+            // const response = await fetch(`http://www.geoplugin.net/json.gp?ip=132.170.27.91`);
+            const data = await response.json();
+            // console.log('IP Data:', data); 
+    
+            if (data.geoplugin_latitude && data.geoplugin_longitude) {
+              const cordinatePolygone = generatePolygonAroundPoint(data.geoplugin_longitude, data.geoplugin_latitude);
+              // Create a feature for this device
+              const feature = {
+
+                
+                type: 'Feature',
+                properties: { name: data.geoplugin_city + " " + devices[index].device_mac_address || 'Unknown City'},
+                geometry: {
+                  type: 'Polygon',
+                  coordinates: //[
+                    cordinatePolygone,
+                    // [
+                    //   [data.geoplugin_longitude, data.geoplugin_latitude],
+                    // ],
+                  //],
+                }, 
+                id: 'USA',
+              };
+
+              // console.log('Feature:', feature.geometry.coordinates);
+              // console.log("Feature Afteeeeeerrrr HERERERERERRERERE:  " + generatePolygonAroundPoint(data.geoplugin_longitude, data.geoplugin_latitude)); // Format coordinates as a GeoJSON Polygon
+
+                // id: deviceIP // Using IP as unique identifier
+
+    
+              // Add the feature to our combined GeoJSON
+              combinedGeoJSON.features.push(feature);
+            }
+          } catch (error) {
+            console.error(`Error fetching data for IP ${deviceIP}:`, error);
+          }
+        }
+
+        // Update state after all fetches complete
+        setDeviceCordinates(combinedGeoJSON);
+        // setIsMapLoading(false);
+        // console.log('Device Coordinates:', deviceCordinates);
+      }
+    };
+
+    fetchCoordinates();
+  }, [devices, isSelected]);
+
+  useEffect(() => {
+    if (isSelected === 'Dashboard') {
+      const updateDeviceColors = async () => {
+        try {
+          // Wait for all device data fetches to complete
+          const deviceUpdates = await Promise.all(
+            devices.map(async (device, index) => {
+              try {
+                const deviceData = await getDataInRecentTimeInterval(device.device_mac_address, 2.0);
+                // console.log('Device Data: FOR COLOOOOOUUUUURRRRRRRRR: ', deviceData);
+                
+                if (deviceData && deviceData.length > 0) {
+                  const chargingStatus = deviceData[deviceData.length - 1].is_charging;
+                  deviceColors[index]=(chargingStatus ? 'green' : 'red');
+                } else {
+                  console.warn(`No data received for device ${device.device_mac_address}`);
+                  deviceColors[index]='gray'; // Default if no data
+                }
+              } catch (error) {
+                console.error(`Error fetching data for device ${device.device_mac_address}:`, error);
+                deviceColors[index]='gray'; // Default color if error
+              }
+            })
+          );
+        } catch (error) {
+          console.error('Error updating device colors:', error);
+        }
+      };
+  
+      // Initial update
+      updateDeviceColors();
+  
+      // Set up interval
+      const intervalId = setInterval(updateDeviceColors, 1500);//1500 was the closest I got to matching the charging bar time 
+  
+      return () => clearInterval(intervalId);
+    }
+  }, [devices, isSelected, deviceDataInRecentTime]);
 
 
+  // display the map after fetching the cordinates
+  useEffect(() => {
+    // console.log('Device Coordinates:', combinedGeoJSON.features);
+    //   console.log('Device Coordinates:', deviceCordinates);
+    //   console.log('Device Coordinates lenght:', deviceCordinates.length);
+    
+    // Check if coordinates were successfully fetched
+    if (deviceCordinates.features !== undefined && deviceCordinates.features !== null) {
+      // console.log('Setting map to not loading'); // Debugging log
+      // console.log('Device Coordinates:', deviceCordinates);
+      setIsMapLoading(false);
+    }
+  }, [deviceCordinates]);
+
+
+  
+  
 
 
   // useEffect(() => {
@@ -438,8 +631,8 @@ const CustomerDashboard = () => {
                 {!isVoltageSettingsSelected ?(
                   <>
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-              {isVoltageSelected ? (
-                <>
+              {isVoltageSelected ? ( // have measurement value : (voltage is just watts) and (current AMP)
+                <> 
                 <h2 style={{ clear: 'left' }}>Voltage</h2>
                 </>
               ) : (
@@ -507,7 +700,7 @@ const CustomerDashboard = () => {
                 ) : (
                   <>
                     {isFrequencyTenDaysSelected ? (
-                      <p>Showing average frequency for the past 7 days</p>
+                      <p>Showing average frequency for the past 7 days</p>  // have the bound be 58 - 62 on the graph 
                     ) : (
                       <></>
                     )}
@@ -560,7 +753,12 @@ const CustomerDashboard = () => {
             </div>
             
             <div className="mapContainer">
-              <DeviceMap bubbleColor="red" />
+              {isMapLoading ? (
+                <p>Loading map...</p>
+              ) : (
+                <DeviceMap/>
+              )}
+              
             </div>
           </>
         )}
