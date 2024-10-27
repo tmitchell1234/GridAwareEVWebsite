@@ -438,7 +438,7 @@ const CustomerDashboard = () => {
 
           try {
             // console.log(" Device IP HERRRRRRREEEEEEEEEEEEEE---------: ", deviceIP+".");
-            const response = await fetch(`http://www.geoplugin.net/json.gp?ip=${deviceIP}`);
+            const response = await fetch(`https://www.geoplugin.net/json.gp?ip=${deviceIP}`);
             // const URL = `http://www.geoplugin.net/json.gp?ip=`+deviceIP;
             // const response = await fetch(URL);
             // console.log(typeof(deviceIP));
