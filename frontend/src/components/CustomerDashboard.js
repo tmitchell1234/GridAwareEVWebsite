@@ -444,28 +444,27 @@ const CustomerDashboard = () => {
 
           try {
             // const response = await fetch(`http://www.geoplugin.net/json.gp?ip=${deviceIP}`);
-            const response = await fetch(`http://www.geoplugin.net/json.gp?ip=${deviceIP}`, {
-              method: 'GET',
-              mode: 'cors' // CORS mode enables the request to include CORS headers
-            });
+            // const response = await fetch(`https://freegeoip.app/json/${deviceIP}`);
+            const response = await fetch(`https://get.geojs.io/v1/ip/geo/${deviceIP}.json`);
             const data = await response.json();
+            console.log('IP Data:', data);
             // console.log('IP Data:', data); 
     
-            if (data.geoplugin_latitude && data.geoplugin_longitude) {
-              const cordinatePolygone = generatePolygonAroundPoint(data.geoplugin_longitude, data.geoplugin_latitude);
+            if (data.latitude && data.longitude) {
+              const cordinatePolygone = generatePolygonAroundPoint(data.longitude, data.latitude);
               // Create a feature for this device
               const feature = {
 
                 
                 type: 'Feature',
-                properties: { name: data.geoplugin_city + " " + devices[index].device_mac_address || 'Unknown City'},
+                properties: { name: data.city + " " + devices[index].device_mac_address || 'Unknown City'},
                 geometry: {
                   type: 'Polygon',
                   coordinates: //[
                     cordinatePolygone,
                   
                 }, 
-                id: 'USA',
+                id: data.country_code || "USA",
               };
 
 
