@@ -46,6 +46,9 @@
   display: flex;
   align-items: center;
   padding-left: 20px;
+  width: 100%;
+  padding-right: 20px;
+  justify-content: center;
 }
 
 .navbar a {
@@ -55,9 +58,11 @@
   padding-left: 100px;
 }
 
-.navbar a:last-child {
-  margin-right: 100px;
+.navbar a:hover {
+  color: #031931;
+  cursor: pointer;
 }
+
 
 
 
@@ -748,8 +753,6 @@ button.cancelregistrationbutton:active {
 }
 
 
-
-
 .SubmitChartSettingbuttonContaine {
   margin-top: 20px;
   display: flex;
@@ -787,4 +790,82 @@ button.cancelregistrationbutton:active {
 
 .cancelChartOrTimeButton:hover {
   background-color: #d32f2f;
+}
+.homepage {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  flex-direction: column;
+  padding-right: 20%;
+}
+
+.homePageSigninButton{
+  background-color: #93c5fd;
+  color: #055559;
+  padding: 10px 20px;
+  margin-right: 5%;
+  margin-left: 5%;
+  font-size: 16px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  transition: background-color 0.3s ease;
+}
+
+.homePageRegisterButton{
+  background-color: #fb923c;
+  color: #220a05;
+  padding: 10px 20px;
+  font-size: 16px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  transition: background-color 0.3s ease;
+}
+
+
+@keyframes bounce {
+  0%, 20%, 50%, 80%, 100% {
+    transform: translateY(0);
+  }
+  40% {
+    transform: translateY(-10px);
+  }
+  60% {
+    transform: translateY(-5px);
+  }
+}
+
+
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+
+.logo {
+  width: 30vh;
+  height: auto;
+  animation: bounce 2s infinite;
+}
+
+
+.logo.pulse {
+  animation: pulse 3s ease-in-out infinite;
+}
+
+.homepageInfoContainer{
+  justify-content: center;
+  align-items: center;
+  padding-left: 10%;
 }
