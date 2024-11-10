@@ -50,44 +50,60 @@ function CurrentChart() {
   //     name: device.time,
   //     value: device.voltage,
   // }));
-  const formatToTime = (date) => {
-    if (!date || isNaN(date.getTime())) {
-      return ""; // Return empty string if date is invalid
-    }
-    const options = { 
-      hour: '2-digit', 
-      minute: '2-digit',
-      hour12: true // for AM and PM
-    }; 
-    return date.toLocaleString('en-US', options); 
-  };
-
   const formatDateTime = (date) => {
-    // console.log("Input date: ", date);
-    if (!date || isNaN(date.getTime())) {
+    if (!date) return ""; // Handle undefined dates
+  
+    const utcDate = new Date(date);
+    if (isNaN(utcDate.getTime())) {
       return ""; // Return empty string if date is invalid
     }
-    const options = { 
-      year: 'numeric', 
-      month: 'long', 
-      day: 'numeric', 
-      hour: '2-digit', 
-      minute: '2-digit',
-      hour12: true // for AM and PM
-    }; 
-    return date.toLocaleString('en-US', options); 
+
+    // Manually format each component
+    const month = utcDate.toLocaleString('en-US', { month: 'long', timeZone: 'UTC' });
+    const day = utcDate.getUTCDate();
+    const year = utcDate.getUTCFullYear();
+    
+    const hours = utcDate.getUTCHours();
+    const minutes = utcDate.getUTCMinutes();
+    
+    // Convert to 12-hour format and determine AM/PM
+    const period = hours >= 12 ? 'PM' : 'AM';
+    const formattedHours = hours % 12 || 12; // Handles 12-hour format, with "0" as "12"
+    const formattedMinutes = minutes.toString().padStart(2, '0'); // Pad minutes
+
+    return `${month} ${day}, ${year}, ${formattedHours}:${formattedMinutes} ${period}`;
   };
 
   function formatDateTimeWithoutYear(date) {
-    const options = {
-      month: 'long',  
-      day: 'numeric',  
-      hour: 'numeric', 
-      minute: 'numeric', 
-      hour12: true,  
-    };
+    if (!date) return ""; // Handle undefined dates
   
-    return date.toLocaleString('en-US', options);
+    const utcDate = new Date(date);
+    if (isNaN(utcDate.getTime())) {
+      return ""; // Return empty string if date is invalid
+    }
+
+    // Extract month, day, hours, and minutes manually
+    const month = utcDate.toLocaleString('en-US', { month: 'long', timeZone: 'UTC' });
+    const day = utcDate.getUTCDate();
+    
+    const hours = utcDate.getUTCHours();
+    const minutes = utcDate.getUTCMinutes();
+
+    // Convert to 12-hour format and determine AM/PM
+    const period = hours >= 12 ? 'PM' : 'AM';
+    const formattedHours = hours % 12 || 12; // Handles 12-hour format, with "0" as "12"
+    const formattedMinutes = minutes.toString().padStart(2, '0'); // Pad minutes
+
+    return `${month} ${day}, ${formattedHours}:${formattedMinutes} ${period}`;
+    // const options = {
+    //   month: 'long',  
+    //   day: 'numeric',  
+    //   hour: 'numeric', 
+    //   minute: 'numeric', 
+    //   hour12: true,  
+    // };
+  
+    // return date.toLocaleString('en-US', options); 
   }
 
   const data = [];
@@ -140,10 +156,18 @@ function CurrentChart() {
     if (count > 0) {
       dateShowing.push(lastTime);
       const averageCurrent = accumulatedCurrent / count;
-      data.push({
+      const newData = {
+        //name: formatToTime(lastTime),
         name: formatDateTimeWithoutYear(new Date(lastTime)),
         value: averageCurrent
-      });
+      }
+      if (!data.some(item => item.name === newData.name /*&& item.value === newData.value*/)) {
+        data.push(newData);
+      }
+      // data.push({
+      //   name: formatDateTimeWithoutYear(new Date(lastTime)),
+      //   value: averageCurrent
+      // });
     }
   }
   else{
@@ -151,43 +175,43 @@ function CurrentChart() {
       const device = deviceDataInRecentTime[i];
       
       // only displaying 10 data points, will allow users to choose how far back they want to see data
-      if (data.length < 60) {
+      // if (data.length < 60) {
         if (data.length > 0 && device.current !== data[data.length - 1].current) {
           // Push the data if charging status changes
           data.push({
-            name: formatToTime(new Date(device.time)),
+            name: formatDateTime(new Date(device.time)),
             value: device.current,
           });
       
           // Store the date for the first pushed data
-          if (data.length === 60) {
-            dateShowing.push(device.time);
-          }
+          // if (data.length === 60) {
+          //   dateShowing.push(device.time);
+          // }
       
         } 
         // will make replace the last data in array to only display when the current changed since we are going inreverse o get the most recent data
         else if (data.length > 0 && device.current === data[data.length - 1].current) {
           data[data.length - 1] = {
-            name: formatToTime(new Date(device.time)),
+            name: formatDateTime(new Date(device.time)),
             value: device.current,
           };
       
           // Store the date for the first pushed data
-          if (data.length === 60) {
-            dateShowing.push(device.time);
-          }
+          // if (data.length === 60) {
+          //   dateShowing.push(device.time);
+          // }
       
         }
         else if (data.length === 0) {
           dateShowing.push(device.time);
           data.push({
-            name: formatToTime(new Date(device.time)),
+            name: formatDateTime(new Date(device.time)),
             value: device.current,
           });
         }
-      } else {
-        break;
-      }
+      // } else {
+      //   break;
+      // }
     }
   }
 

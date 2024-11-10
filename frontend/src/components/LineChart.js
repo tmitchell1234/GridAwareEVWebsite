@@ -41,27 +41,39 @@ function LineChart() {
 
   // Function to format time for X-axis
   const formatToTime = (date) => {
-    if (!date || isNaN(date.getTime())) {
-      return ""; // Return empty string if date is invalid
-    }
-    const options = { 
-      hour: '2-digit', 
-      minute: '2-digit',
-      hour12: true // for AM and PM
-    }; 
-    return date.toLocaleString('en-US', options); 
-  };
-
-  function formatDateTimeWithoutYear(date) {
-    const options = {
-      month: 'long',  
-      day: 'numeric',  
-      hour: 'numeric', 
-      minute: 'numeric', 
-      hour12: true,  
-    };
+    if (!date) return ""; // Handle undefined dates
+    const utcDate = new Date(date);
   
-    return date.toLocaleString('en-US', options); 
+    const hours = utcDate.getUTCHours();
+    const minutes = utcDate.getUTCMinutes();
+    const seconds = utcDate.getUTCSeconds();
+    
+    const period = hours >= 12 ? 'PM' : 'AM';
+    const formattedHours = hours % 12 || 12; // Convert to 12-hour format
+    const formattedMinutes = minutes.toString().padStart(2, '0');
+    const formattedSeconds = seconds.toString().padStart(2, '0');
+    if(isFrequencyTenDaysSelected) {
+      return `${formattedHours}:${formattedMinutes} ${period}`;
+    }else{
+      return `${formattedHours}:${formattedMinutes}.${formattedSeconds} ${period}`;
+    }
+  };
+  
+  function formatDateTimeWithoutYear(date) {
+    if (!date) return ""; // Handle undefined dates
+    const utcDate = new Date(date);
+  
+    const month = utcDate.toLocaleString('en-US', { month: 'long', timeZone: 'UTC' });
+    const day = utcDate.getUTCDate();
+    
+    const hours = utcDate.getUTCHours();
+    const minutes = utcDate.getUTCMinutes();
+  
+    const period = hours >= 12 ? 'PM' : 'AM';
+    const formattedHours = hours % 12 || 12; // Convert to 12-hour format
+    const formattedMinutes = minutes.toString().padStart(2, '0');
+  
+    return `${month} ${day}, ${formattedHours}:${formattedMinutes} ${period}`;
   }
 
 
@@ -170,18 +182,24 @@ function LineChart() {
 
   // Function to format date and time
   const formatDateTime = (date) => {
-    if (!date || isNaN(date.getTime())) {
-      return ""; // Return empty string if date is invalid
+    if (!date) return "";
+    const utcDate = new Date(date);
+  
+    if (isNaN(utcDate.getTime())) {
+      return ""; 
     }
+  
     const options = { 
       year: 'numeric', 
       month: 'long', 
       day: 'numeric', 
       hour: '2-digit', 
       minute: '2-digit',
-      hour12: true // for AM and PM
-    }; 
-    return date.toLocaleString('en-US', options); 
+      hour12: true,
+      timeZone: 'UTC' //display as UTC
+    };
+  
+    return utcDate.toLocaleString('en-US', options); 
   };
 
   const formattedFirstDate = formatDateTime(new Date(dateShowing[1]));

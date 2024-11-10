@@ -3,42 +3,55 @@ import { clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
 import styled, { keyframes, createGlobalStyle } from "styled-components";
 
-// Keyframes for aurora animation
+// Keyframes for pulsing and color-shifting animation
 const auroraAnimation = keyframes`
   0% {
-    background-position: 50% 50%, 50% 50%;
+    background-position: 0% 50%;
+    opacity: 1;
+  }
+  50% {
+    background-position: 130% 50%;
+    opacity: 1;
   }
   100% {
-    background-position: 350% 50%, 350% 50%;
+    background-position: 0% 50%;
+    opacity: 1;
   }
 `;
 
-// Styled component for aurora animation
+// Styled component for aurora animation with pulsing and color shifting
 const AuroraDiv = styled.div`
   position: fixed;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  background-image: repeating-linear-gradient(100deg, var(--blue-500) 10%, var(--indigo-300) 15%, var(--blue-300) 20%, var(--violet-200) 25%, var(--blue-400) 30%);
-  background-size: 300% 200%;
-  background-position: 50% 50%;
-  animation: ${auroraAnimation} 60s linear infinite;
+  background-image: linear-gradient(
+    102deg,
+    var(--orange-500) 0%,
+    var(--red-400) 20%,
+    var(--yellow-300) 40%,
+    var(--blue-500) 60%,
+    var(--blue-400) 80%,
+    var(--blue-300) 100%
+  );
+  background-size: 200% 200%;
+  animation: ${auroraAnimation} 10s ease-in-out infinite;
   z-index: -1;
   filter: blur(100px);
   pointer-events: none;
   opacity: 0.9;
 `;
 
-// Global style for adding Tailwind colors as CSS variables
+// Global style for adding custom colors as CSS variables
 const GlobalStyle = createGlobalStyle`
   :root {
-    --gray-200: #e5e7eb;
+    --orange-500: #fb923c;
+    --red-400: #f87171;
+    --yellow-300: #fde047;
     --blue-500: #3b82f6;
-    --indigo-300: #a5b4fc;
-    --blue-300: #93c5fd;
-    --violet-200: #c4b5fd;
     --blue-400: #60a5fa;
+    --blue-300: #93c5fd;
     --transparent: transparent;
     --white: #ffffff;
     --black: #000000;

@@ -269,6 +269,8 @@ const CustomerDashboard = () => {
       try {
         const data = await getDataInRecentTimeInterval(devices[0].device_mac_address, 5.0);
         setDeviceDataInRecentTime(data);
+        // console.log("Latest Fetched Data: ", data[data.length - 1]);
+        // console.log(" ", data);
       } catch (error) {
         console.error("Error fetching data:", error);
       } finally {
@@ -344,6 +346,7 @@ const CustomerDashboard = () => {
       fetchNewData(432000.0); // Last 10 days
       settenDaysDataAdded(true);
       setIsVoltageChartLoading(false);
+      console.log('Voltage 10 dats data added');
     } else if (isFrequencyTenDaysSelected && !tenDaysDataAdded) {
       // console.log('Adding 7 days data');
       fetchNewData(432000.0); // Last 10 days
@@ -354,6 +357,7 @@ const CustomerDashboard = () => {
       fetchNewData(432000.0); // Last 10 days
       settenDaysDataAdded(true);
       setIsChargingHistoryLoading(false);
+
     } else {
       // Always fetch the last 20 seconds data
       // console.log('Adding 20 seconds data');
@@ -415,6 +419,8 @@ const CustomerDashboard = () => {
     return [polygonCoordinates];
   }
 
+  
+
   // grap IP addresses of devices
   useEffect(() => {
     const fetchCoordinates = async () => {
@@ -437,21 +443,11 @@ const CustomerDashboard = () => {
           // console.log('http://www.geoplugin.net/json.gp?ip=${deviceIP}');
 
           try {
-            // console.log(" Device IP HERRRRRRREEEEEEEEEEEEEE---------: ", deviceIP+".");
-            const response = await fetch(`http://www.geoplugin.net/json.gp?ip=${deviceIP}`);
-            // const URL = `http://www.geoplugin.net/json.gp?ip=`+deviceIP;
-            // const response = await fetch(URL);
-            // console.log(typeof(deviceIP));
-
-            // const response = await fetch(`http://www.geoplugin.net/json.gp?ip=132.170.27.91`);
-            
-            // fetch(`http://www.geoplugin.net/json.gp?ip=132.170.27.91`)
-            // .then(response => response.json())
-            // .then((data) => console.log(data));
-            
-            // console.log("LOOOOKIING FOR THE DATA ABOVE THIS LINE HERE EEEEEEEEEEEE");
-
-            // const response = await fetch(`http://www.geoplugin.net/json.gp?ip=132.170.27.91`);
+            // const response = await fetch(`http://www.geoplugin.net/json.gp?ip=${deviceIP}`);
+            const response = await fetch(`http://www.geoplugin.net/json.gp?ip=${deviceIP}`, {
+              method: 'GET',
+              mode: 'cors' // CORS mode enables the request to include CORS headers
+            });
             const data = await response.json();
             // console.log('IP Data:', data); 
     
@@ -467,18 +463,11 @@ const CustomerDashboard = () => {
                   type: 'Polygon',
                   coordinates: //[
                     cordinatePolygone,
-                    // [
-                    //   [data.geoplugin_longitude, data.geoplugin_latitude],
-                    // ],
-                  //],
+                  
                 }, 
                 id: 'USA',
               };
 
-              // console.log('Feature:', feature.geometry.coordinates);
-              // console.log("Feature Afteeeeeerrrr HERERERERERRERERE:  " + generatePolygonAroundPoint(data.geoplugin_longitude, data.geoplugin_latitude)); // Format coordinates as a GeoJSON Polygon
-
-                // id: deviceIP // Using IP as unique identifier
 
     
               // Add the feature to our combined GeoJSON

@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useRef, useState, useEffect } from "react";
-import { Bar, XAxis, YAxis, Tooltip, CartesianGrid, BarChart as RechartsBarChart } from "recharts";
+import { Bar, XAxis, YAxis, Tooltip, CartesianGrid, BarChart as RechartsBarChart, Cell } from "recharts";
 import { TrendingUp } from "lucide-react";
 import { useDeviceContext } from './DeviceContent';
 
@@ -49,25 +49,42 @@ function CustomBarChart() {
   // Function to format time
   const formatToTime = (date) => {
     if (!date) return ""; // Handle undefined dates
-    const options = { 
-      hour: '2-digit', 
-      minute: '2-digit',
-      hour12: true // for AM and PM
-    }; 
-    return new Date(date).toLocaleString('en-US', options); 
-  };
-
-  function formatDateTimeWithoutYear(date) {
-    const options = {
-      month: 'long',  
-      day: 'numeric',  
-      hour: 'numeric', 
-      minute: 'numeric', 
-      hour12: true,  
-    };
+    const utcDate = new Date(date);
   
-    return date.toLocaleString('en-US', options); 
+    const hours = utcDate.getUTCHours();
+    const minutes = utcDate.getUTCMinutes();
+    const seconds = utcDate.getUTCSeconds();
+    
+    const period = hours >= 12 ? 'PM' : 'AM';
+    const formattedHours = hours % 12 || 12; // Convert to 12-hour format
+    const formattedMinutes = minutes.toString().padStart(2, '0');
+    const formattedSeconds = seconds.toString().padStart(2, '0');
+    if(isChargingHistoryTenDaysSelected) {
+      return `${formattedHours}:${formattedMinutes} ${period}`;
+    }else{
+      return `${formattedHours}:${formattedMinutes}.${formattedSeconds} ${period}`;
+    }
+  };
+  
+  function formatDateTimeWithoutYear(date) {
+    if (!date) return ""; // Handle undefined dates
+    const utcDate = new Date(date);
+  
+    const month = utcDate.toLocaleString('en-US', { month: 'long', timeZone: 'UTC' });
+    const day = utcDate.getUTCDate();
+    
+    const hours = utcDate.getUTCHours();
+    const minutes = utcDate.getUTCMinutes();
+  
+    const period = hours >= 12 ? 'PM' : 'AM';
+    const formattedHours = hours % 12 || 12; // Convert to 12-hour format
+    const formattedMinutes = minutes.toString().padStart(2, '0');
+  
+    return `${month} ${day}, ${formattedHours}:${formattedMinutes} ${period}`;
   }
+  
+  
+  
 
   // Create chart data including is_charging
   const chartData = [];
@@ -77,6 +94,8 @@ function CustomBarChart() {
   deviceDataInRecentTime.sort((a, b) => new Date(a.time) - new Date(b.time)); // Sort by time (oldest to newest)
   // Sort the deviceDataInTenDays by time
   deviceDataInTenDays.sort((a, b) => new Date(a.time) - new Date(b.time));
+
+  // console.log("Device In Recent Time: ", deviceDataInRecentTime);
 
   if (isChargingHistoryTenDaysSelected) {
     // Use local variables to track transitions
@@ -196,7 +215,7 @@ function CustomBarChart() {
       const device = deviceDataInRecentTime[i];
 
       // only displaying 10 data points, will allow users to choose how far back they want to see data
-      if (chartData.length < 21) {
+      // if (chartData.length < 21) {
         if (chartData.length > 0 && device.is_charging !== (chartData[chartData.length - 1].is_charging === "Charging")) {
           // Push the data if charging status changes
           chartData.push({
@@ -232,29 +251,50 @@ function CustomBarChart() {
             is_charging: device.is_charging ? "Charging" : "Not Charging"
           });
         }
-      } else {
-        break;
-      }
+      // } else {
+      //   break;
+      // }
     }
   }
   // reversing to show the data in ascending order
   chartData.reverse();
 
   const formatDateTime = (date) => {
-    // console.log("Input date: ", date);
-    if (!date || isNaN(date.getTime())) {
-      return ""; // Return empty string if date is invalid
+    if (!date) return "";
+    const utcDate = new Date(date);
+  
+    if (isNaN(utcDate.getTime())) {
+      return ""; 
     }
+  
     const options = { 
       year: 'numeric', 
       month: 'long', 
       day: 'numeric', 
       hour: '2-digit', 
       minute: '2-digit',
-      hour12: true // for AM and PM
-    }; 
-    return date.toLocaleString('en-US', options); 
+      hour12: true,
+      timeZone: 'UTC' //display as UTC
+    };
+  
+    return utcDate.toLocaleString('en-US', options); 
   };
+
+  // const formatDateTime = (date) => {
+  //   // console.log("Input date: ", date);
+  //   if (!date || isNaN(date.getTime())) {
+  //     return ""; // Return empty string if date is invalid
+  //   }
+  //   const options = { 
+  //     year: 'numeric', 
+  //     month: 'long', 
+  //     day: 'numeric', 
+  //     hour: '2-digit', 
+  //     minute: '2-digit',
+  //     hour12: true // for AM and PM
+  //   }; 
+  //   return date.toLocaleString('en-US', options); 
+  // };
 
   // Create formatted strings to show the chart dates
   const formattedFirstDate = formatDateTime(new Date(dateShowing[1]));
@@ -296,7 +336,20 @@ function CustomBarChart() {
               return [`${is_charging}`]; // Display only charging status
             }} 
           />
-          <Bar dataKey="desktop" fill="teal" radius={5} />
+          {isChargingHistoryTenDaysSelected ? (
+            <Bar dataKey="desktop" fill="teal" radius={5} />) : (
+              <Bar dataKey="desktop" radius={5}>
+              {chartData.map((entry, index) => (
+                <Cell 
+                  key={`cell-${index}`} 
+                  fill={entry.desktop === 5 ? "teal" : "red"} 
+                />
+              ))}
+            </Bar>
+
+            )}
+          
+          {/* <Bar dataKey="desktop" fill="teal" radius={5} /> */}
         </RechartsBarChart>
       </div>
       </>
