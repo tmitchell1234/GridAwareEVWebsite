@@ -15,6 +15,8 @@ import { faGear } from '@fortawesome/free-solid-svg-icons';
 import VoltageChartSetting from './VoltageChartSetting';
 import FrequencyChartSetting from './FrequencyChartSetting';
 import ChargingHistoryChartSettings from './ChargingHistoryChartSettings';
+import BatteryGauge from 'react-battery-gauge';
+import AuroraBackground from "../components/AuroraBackground";
 
 const Sidebar = ({ setSelected }) => {
   const [isHovered, setIsHovered] = useState(false);
@@ -57,7 +59,7 @@ const Sidebar = ({ setSelected }) => {
   //  Styling for the sidebar 
   const sidebarStyle = {
     height: '100vh',
-    backgroundColor: '#f8f9fa',
+    backgroundColor: 'rgba(255, 255, 255, 0.5)',//'#f8f9fa',
     borderRight: '1px solid #dee2e6',
     position: 'relative',
     display: 'flex',
@@ -70,7 +72,7 @@ const Sidebar = ({ setSelected }) => {
     display: 'flex',
     alignItems: 'center',
     padding: '10px',
-    backgroundColor: '#e9ecef',
+    backgroundColor: 'rgba(255, 255, 255, 0.2)',//'#e9ecef',
   };
 
   const logoStyle = {
@@ -113,7 +115,7 @@ const Sidebar = ({ setSelected }) => {
   };
 
   const sidebarLinkHoverStyle = {
-    backgroundColor: '#e2e6ea',
+    backgroundColor: 'rgba(255, 255, 255, 0.5)'//'#e2e6ea',
   };
 
   const iconStyle = {
@@ -130,7 +132,7 @@ const Sidebar = ({ setSelected }) => {
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: '#e9ecef',
+    backgroundColor: 'rgba(255, 255, 255, 0.2)',//'#e9ecef',
   };
 
   const avatarStyle = {
@@ -195,7 +197,9 @@ const CustomerDashboard = () => {
     tenDaysDataAdded, settenDaysDataAdded, isLoading, setIsLoading, isTenDaysVoltageSelected, deviceDataInTenDays, setDeviceDataInTenDays, isVoltageChartLoading, setIsVoltageChartLoading, isVoltageSelected,
     isFrequencyChartSettingsSelected, setIsFrequencyChartSettingsSelected, isFrequencyChartLoading, setIsFrequencyChartLoading, isFrequencyTenDaysSelected, setIsFrequencyTenDaysSelected,
     isChargingHisorySettingsSelected, setIsChargingHisorySettingsSelected, isChargingHistoryLoading, setIsChargingHistoryLoading, isChargingHistoryTenDaysSelected, setIsChargingHistoryTenDaysSelected,
-    deviceCordinates, setDeviceCordinates, isMapLoading, setIsMapLoading, deviceLocationsFetched, setDeviceLocationsFetched, deviceColors, setDeviceColors
+    deviceCordinates, setDeviceCordinates, isMapLoading, setIsMapLoading, deviceLocationsFetched, setDeviceLocationsFetched, deviceColors, setDeviceColors,
+    deviceDataInOneDays, setDeviceDataInOneDays, oneDaysDataAdded, setOneDaysDataAdded, isOneDaysVoltageSelected, setIsOneDaysVoltageSelected, 
+    isFrequencyOneDaysSelected, setIsFrequencyOneDaysSelected, isChargingHistoryOneDaysSelected, setIsChargingHistoryOneDaysSelected
   } = useDeviceContext();
   const [dontFetchData, setDontFetchData] = useState(false);
   let deviceCordimates = {};
@@ -212,7 +216,7 @@ const CustomerDashboard = () => {
   const dashboardStyle = {
     display: 'flex',
     height: '100vh',
-    backgroundColor: '#f0f2f5',
+    backgroundColor: 'rgba(255, 255, 255, 0.1)',//'transparent',//'#f0f2f5',
   };
 
   const contentStyle = {
@@ -301,7 +305,7 @@ const CustomerDashboard = () => {
 
   // will be used to not fetch continuous data when user is looking at past 7 days data in all of the charts.
   useEffect(() => {
-    if(isTenDaysVoltageSelected && isFrequencyTenDaysSelected && isChargingHistoryTenDaysSelected){
+    if((isTenDaysVoltageSelected || isOneDaysVoltageSelected) && (isFrequencyTenDaysSelected || isFrequencyOneDaysSelected) && (isChargingHistoryTenDaysSelected || isChargingHistoryOneDaysSelected)){
       setDontFetchData(true);
     }
     else if(isSelected !== 'Dashboard'){
@@ -311,7 +315,7 @@ const CustomerDashboard = () => {
       setDontFetchData(false);
     }
     // console.log('Dont fetch data:', dontFetchData);
-  }, [isTenDaysVoltageSelected, isFrequencyTenDaysSelected, isChargingHistoryTenDaysSelected, isSelected]);
+  }, [isTenDaysVoltageSelected, isFrequencyTenDaysSelected, isChargingHistoryTenDaysSelected, isSelected, isOneDaysVoltageSelected, isFrequencyOneDaysSelected, isChargingHistoryOneDaysSelected]);
 
 
   // fetching new data to display to users every couple seconds.    IF FAILED TO FECTH DATA, DISPLAY MESSAGE THAT DEVICE ISN'T CONNECTED or offline 
@@ -323,7 +327,9 @@ const CustomerDashboard = () => {
       if (devices && devices.length > 0) {
         try {
           const data = await getDataInRecentTimeInterval(devices[0].device_mac_address, duration);
-          
+          if(!oneDaysDataAdded){
+            setDeviceDataInOneDays(data);
+          }
           if(!tenDaysDataAdded){
             setDeviceDataInTenDays(data);
           }
@@ -358,6 +364,21 @@ const CustomerDashboard = () => {
       settenDaysDataAdded(true);
       setIsChargingHistoryLoading(false);
 
+    } else if (isOneDaysVoltageSelected && !oneDaysDataAdded){
+      // console.log('Adding 1 days data');
+      fetchNewData(86400.0); // Last 1 day
+      setOneDaysDataAdded(true);
+      setIsVoltageChartLoading(false);
+    }else if(isFrequencyOneDaysSelected && !oneDaysDataAdded){
+      // console.log('Adding 1 days data');
+      fetchNewData(86400.0); // Last 1 day
+      setOneDaysDataAdded(true);
+      setIsFrequencyChartLoading(false);
+    } else if(isChargingHistoryOneDaysSelected && !oneDaysDataAdded){
+      // console.log('Adding 1 days data');
+      fetchNewData(86400.0); // Last 1 day
+      setOneDaysDataAdded(true);
+      setIsChargingHistoryLoading(false);
     } else {
       // Always fetch the last 20 seconds data
       // console.log('Adding 20 seconds data');
@@ -447,7 +468,7 @@ const CustomerDashboard = () => {
             // const response = await fetch(`https://freegeoip.app/json/${deviceIP}`);
             const response = await fetch(`https://get.geojs.io/v1/ip/geo/${deviceIP}.json`);
             const data = await response.json();
-            console.log('IP Data:', data);
+            // console.log('IP Data:', data);
             // console.log('IP Data:', data); 
     
             if (data.latitude && data.longitude) {
@@ -486,6 +507,7 @@ const CustomerDashboard = () => {
 
     fetchCoordinates();
   }, [devices, isSelected]);
+
 
   useEffect(() => {
     if (isSelected === 'Dashboard') {
@@ -605,6 +627,7 @@ const CustomerDashboard = () => {
   
 
   return (
+    <AuroraBackground >
     <div style={dashboardStyle}>
       <Sidebar setSelected={setSelected} />
       <div className="dashboardcontainer" style={contentStyle}>
@@ -706,6 +729,11 @@ const CustomerDashboard = () => {
                         ) : (
                           <h2 style={{ clear: 'left' }}>Charging History</h2>
                         )}
+                        <BatteryGauge 
+                          value={deviceDataInRecentTime[deviceDataInRecentTime.length - 1]?.battery_percentage} 
+                          // animated="true"
+                          size='90'
+                        />
                   
                   <button
                     style={{ 
@@ -737,6 +765,7 @@ const CustomerDashboard = () => {
                     <BarChart />
                 </>
                 )}
+                
               </div>
             </div>
             
@@ -765,150 +794,11 @@ const CustomerDashboard = () => {
           </>
         )}
       </div>
+      
     </div>
+    </AuroraBackground>
   );
 };
 
 export default CustomerDashboard;
 
-
-
-// "use client";
-// import React, { useState } from "react";
-// import { Sidebar, SidebarBody, SidebarLink } from "./ui/sidebar";
-// import {
-//   IconArrowLeft,
-//   IconBrandTabler,
-//   IconSettings,
-//   IconUserBolt,
-// } from "@tabler/icons-react";
-// import Link from "next/link";
-// import { motion } from "framer-motion";
-// import Image from "next/image";
-// import { cn } from "./utils/utils";
-
-// export function CustomerDashboard() {
-//   const links = [
-//     {
-//       label: "Dashboard",
-//       href: "#",
-//       icon: (
-//         <IconBrandTabler className="text-neutral-700 dark:text-neutral-200 h-5 w-5 flex-shrink-0" />
-//       ),
-//     },
-//     {
-//       label: "Profile",
-//       href: "#",
-//       icon: (
-//         <IconUserBolt className="text-neutral-700 dark:text-neutral-200 h-5 w-5 flex-shrink-0" />
-//       ),
-//     },
-//     {
-//       label: "Settings",
-//       href: "#",
-//       icon: (
-//         <IconSettings className="text-neutral-700 dark:text-neutral-200 h-5 w-5 flex-shrink-0" />
-//       ),
-//     },
-//     {
-//       label: "Logout",
-//       href: "#",
-//       icon: (
-//         <IconArrowLeft className="text-neutral-700 dark:text-neutral-200 h-5 w-5 flex-shrink-0" />
-//       ),
-//     },
-//   ];
-//   const [open, setOpen] = useState(false);
-//   return (
-//     (<div
-//       className={cn(
-//         "rounded-md flex flex-col md:flex-row bg-gray-100 dark:bg-neutral-800 w-full flex-1 max-w-7xl mx-auto border border-neutral-200 dark:border-neutral-700 overflow-hidden",
-//         // for your use case, use `h-screen` instead of `h-[60vh]`
-//         "h-[60vh]"
-//       )}>
-//       <Sidebar open={open} setOpen={setOpen} animate={false}>
-//         <SidebarBody className="justify-between gap-10">
-//           <div className="flex flex-col flex-1 overflow-y-auto overflow-x-hidden">
-//             <>
-//               <Logo />
-//             </>
-//             <div className="mt-8 flex flex-col gap-2">
-//               {links.map((link, idx) => (
-//                 <SidebarLink key={idx} link={link} />
-//               ))}
-//             </div>
-//           </div>
-//           <div>
-//             <SidebarLink
-//               link={{
-//                 label: "Manu Arora",
-//                 href: "#",
-//                 icon: (
-//                   <Image
-//                     src="https://assets.aceternity.com/manu.png"
-//                     className="h-7 w-7 flex-shrink-0 rounded-full"
-//                     width={50}
-//                     height={50}
-//                     alt="Avatar" />
-//                 ),
-//               }} />
-//           </div>
-//         </SidebarBody>
-//       </Sidebar>
-//       <Dashboard />
-//     </div>)
-//   );
-// }
-// const Logo = () => {
-//   return (
-//     (<Link
-//       href="#"
-//       className="font-normal flex space-x-2 items-center text-sm text-black py-1 relative z-20">
-//       <div
-//         className="h-5 w-6 bg-black dark:bg-white rounded-br-lg rounded-tr-sm rounded-tl-lg rounded-bl-sm flex-shrink-0" />
-//       <motion.span
-//         initial={{ opacity: 0 }}
-//         animate={{ opacity: 1 }}
-//         className="font-medium text-black dark:text-white whitespace-pre">
-//         Acet Labs
-//       </motion.span>
-//     </Link>)
-//   );
-// };
-// const LogoIcon = () => {
-//   return (
-//     (<Link
-//       href="#"
-//       className="font-normal flex space-x-2 items-center text-sm text-black py-1 relative z-20">
-//       <div
-//         className="h-5 w-6 bg-black dark:bg-white rounded-br-lg rounded-tr-sm rounded-tl-lg rounded-bl-sm flex-shrink-0" />
-//     </Link>)
-//   );
-// };
-
-// // Dummy dashboard component with content
-// const Dashboard = () => {
-//   return (
-//     (<div className="flex flex-1">
-//       <div
-//         className="p-2 md:p-10 rounded-tl-2xl border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-900 flex flex-col gap-2 flex-1 w-full h-full">
-//         <div className="flex gap-2">
-//           {[...new Array(4)].map((i) => (
-//             <div
-//               key={"first" + i}
-//               className="h-20 w-full rounded-lg  bg-gray-100 dark:bg-neutral-800 animate-pulse"></div>
-//           ))}
-//         </div>
-//         <div className="flex gap-2 flex-1">
-//           {[...new Array(2)].map((i) => (
-//             <div
-//               key={"second" + i}
-//               className="h-full w-full rounded-lg  bg-gray-100 dark:bg-neutral-800 animate-pulse"></div>
-//           ))}
-//         </div>
-//       </div>
-//     </div>)
-//   );
-// };
-
-// export default CustomerDashboard();

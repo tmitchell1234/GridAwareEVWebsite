@@ -470,6 +470,12 @@ button.cancelregistrationbutton:active {
   text-align: center; 
 }
 
+.frequencyChartSettingsContainer{
+  align-items: center;
+  justify-content: center;
+  padding-left: 35%;
+}
+
 
 .dashboardcontainer{
   overflow-x: hidden; 
@@ -480,7 +486,8 @@ button.cancelregistrationbutton:active {
 
 
 .mapContainer{
-  height: 48%;
+  height: 55%;
+  width: 100%;
   margin-top: 2%;
   background: rgba(255, 255, 255, 0.5);
   backdrop-filter: blur(10px);
@@ -869,3 +876,12 @@ button.cancelregistrationbutton:active {
   align-items: center;
   padding-left: 10%;
 }
+
+.batteryGauge{
+  width: 5%vh;
+}
+
+
+
+
+

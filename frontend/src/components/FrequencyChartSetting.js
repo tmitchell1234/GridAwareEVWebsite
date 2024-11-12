@@ -6,7 +6,7 @@ function FrequencyChartSetting() {
   const {isFrequencyChartSettingsSelected, setIsFrequencyChartSettingsSelected, 
     chartDateChanged, setChartDateChanged, isLoading, setIsLoading, 
     isFrequencyTenDaysSelected, setIsFrequencyTenDaysSelected, settenDaysDataAdded, 
-    isFrequencyChartLoading, setIsFrequencyChartLoading
+    isFrequencyChartLoading, setIsFrequencyChartLoading, deviceDataInOneDays, isFrequencyOneDaysSelected, setIsFrequencyOneDaysSelected
     } = useDeviceContext();
 
 
@@ -21,6 +21,8 @@ function FrequencyChartSetting() {
     // console.log("10 Days Voltage Selected:", isFrequencyTenDaysSelected);
     if(isFrequencyTenDaysSelected) {
       setSelectedTimeOption("10days");
+    }else if(isFrequencyOneDaysSelected){
+      setSelectedTimeOption("Oneday");
     }else { 
       setSelectedTimeOption("live");
     } 
@@ -32,12 +34,21 @@ function FrequencyChartSetting() {
         setIsFrequencyChartLoading(true);
         setChartDateChanged(true);
         setIsFrequencyTenDaysSelected(true);
+        setIsFrequencyOneDaysSelected(false);
         
+        setIsFrequencyChartSettingsSelected(false);
+    }
+    else if(selectedTimeOption === "Oneday") {
+      setIsFrequencyChartLoading(true);
+        setChartDateChanged(true);
+        setIsFrequencyTenDaysSelected(false);
+        setIsFrequencyOneDaysSelected(true);
         setIsFrequencyChartSettingsSelected(false);
     }
     else if(selectedTimeOption === "live") {
         setIsFrequencyChartLoading(true);
       setIsFrequencyTenDaysSelected(false);
+      setIsFrequencyOneDaysSelected(false);
       setIsFrequencyChartSettingsSelected(false);
        setChartDateChanged(true);
     }
@@ -50,7 +61,7 @@ function FrequencyChartSetting() {
 
 
   return (
-    <div className="voltageSettingsContainer">
+    <div className="frequencyChartSettingsContainer">
       <h3>Time:</h3>
       {/*10 Days and Live */}
       <div className="tenDaysOrLiveSelection row">
@@ -62,6 +73,15 @@ function FrequencyChartSetting() {
           />
           <span className="checkmark"></span>
           7 Days
+        </label>
+        <label className="CheckboxLabel">
+          <input
+            type="checkbox"
+            checked={selectedTimeOption === "Oneday"}
+            onChange={() => handleTimeChange("Oneday")}
+          />
+          <span className="checkmark"></span>
+          1 Day
         </label>
         <label className="CheckboxLabel">
           <input

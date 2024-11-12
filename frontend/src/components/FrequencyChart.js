@@ -8,7 +8,7 @@ import { useDeviceContext } from './DeviceContent';
 function FrequencyChart() {
   const chartContainerRef = useRef(null);
   const [containerWidth, setContainerWidth] = useState(200); //initial width
-  const { deviceDataInRecentTime, isTenDaysVoltageSelected, deviceDataInTenDays, isVoltageChartLoading } = useDeviceContext();
+  const { deviceDataInRecentTime, isTenDaysVoltageSelected, deviceDataInTenDays, isVoltageChartLoading, deviceDataInOneDays, isOneDaysVoltageSelected } = useDeviceContext();
   const dateShowing = [];
 
   useEffect(() => {
@@ -130,6 +130,7 @@ function FrequencyChart() {
 
   deviceDataInRecentTime.sort((a, b) => new Date(a.time) - new Date(b.time)); // Sort by time (oldest to newest)
   deviceDataInTenDays.sort((a, b) => new Date(a.time) - new Date(b.time));
+  deviceDataInOneDays.sort((a, b) => new Date(a.time) - new Date(b.time));
   if(isTenDaysVoltageSelected) {
     let accumulatedVoltage = 0;
     let count = 0;
@@ -195,8 +196,71 @@ function FrequencyChart() {
       //   value: averageVoltage
       // });
     }
-  }
-  else{
+  }else if(isOneDaysVoltageSelected){
+    let accumulatedVoltage = 0;
+    let count = 0;
+    let lastTime = new Date(deviceDataInOneDays[0].time);
+    // console.log("Last Time: ", lastTime);
+    // console.log("Device Data in Ten Days Time : ", deviceDataInTenDays[0].time);
+    // console.log("Device Data in Ten Days: ", deviceDataInTenDays);
+    
+    for (let i = deviceDataInOneDays.length - 1; i >= 0; i--) {
+      const device = deviceDataInOneDays[i];
+      const deviceTime = new Date(device.time);
+      
+      
+      // Check if 8 hours have passed
+      if (Math.abs(deviceTime - lastTime) >= 1 * 60 * 60 * 1000) {
+        if (count > 0) {
+          // Calculate the average and push the data
+          const averageVoltage = accumulatedVoltage / count;
+          data.push({
+            //name: formatToTime(lastTime),
+            name: formatDateTimeWithoutYear(new Date(device.time)),
+            value: averageVoltage
+          });
+
+          
+          
+          // Reset accumulation for the next 8 hours
+          accumulatedVoltage = 0;
+          count = 0;
+          
+          // Update the last time to the current time
+          lastTime = deviceTime;
+        }
+      }
+
+      if(data.length === 1 && dateShowing.length === 0) {
+        dateShowing.push(lastTime);
+        // dateShowing.push(deviceDataInTenDays[0].time);
+        console.log("FIRST DATE : ", lastTime);
+      }
+      
+    
+      // Accumulate voltage for averaging
+      accumulatedVoltage += device.voltage;
+      count++;
+    }
+    
+    //remaining data not yet pushed (for the last interval less than 8 hours)
+    if (count > 0) {
+      dateShowing.push(lastTime);
+      const averageVoltage = accumulatedVoltage / count;
+      const newData = {
+        //name: formatToTime(lastTime),
+        name: formatDateTimeWithoutYear(new Date(lastTime)),
+        value: averageVoltage
+      }
+      if (!data.some(item => item.name === newData.name /*&& item.value === newData.value*/)) {
+        data.push(newData);
+      }
+      // data.push({
+      //   name: formatDateTimeWithoutYear(new Date(lastTime)),
+      //   value: averageVoltage
+      // });
+    }
+  }else{
     for (let i = deviceDataInRecentTime.length - 1; i >= 0; i--) {
       const device = deviceDataInRecentTime[i];
       

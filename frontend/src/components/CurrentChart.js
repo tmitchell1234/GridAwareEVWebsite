@@ -8,7 +8,7 @@ import { useDeviceContext } from './DeviceContent';
 function CurrentChart() {
   const chartContainerRef = useRef(null);
   const [containerWidth, setContainerWidth] = useState(200); //initial width
-  const { deviceDataInRecentTime, isTenDaysVoltageSelected, deviceDataInTenDays, isVoltageChartLoading } = useDeviceContext();
+  const { deviceDataInRecentTime, isTenDaysVoltageSelected, deviceDataInTenDays, isVoltageChartLoading, deviceDataInOneDays, isOneDaysVoltageSelected } = useDeviceContext();
   const dateShowing = [];
 
   useEffect(() => {
@@ -122,6 +122,66 @@ function CurrentChart() {
       
       // Check if 8 hours have passed
       if (Math.abs(deviceTime - lastTime) >= 8 * 60 * 60 * 1000) {
+        if (count > 0) {
+          // Calculate the average and push the data
+          const averageCurrent = accumulatedCurrent / count;
+          data.push({
+            //name: formatToTime(lastTime),
+            name: formatDateTimeWithoutYear(new Date(device.time)),
+            value: averageCurrent
+          });
+
+          
+          
+          // Reset accumulation for the next 8 hours
+          accumulatedCurrent = 0;
+          count = 0;
+          
+          // Update the last time to the current time
+          lastTime = deviceTime;
+        }
+      }
+
+      if(data.length === 1 && dateShowing.length === 0) {
+        dateShowing.push(lastTime);
+      }
+      
+    
+      // Accumulate current for averaging
+      accumulatedCurrent += device.current;
+      count++;
+    }
+    
+    //remaining data not yet pushed (for the last interval less than 8 hours)
+    if (count > 0) {
+      dateShowing.push(lastTime);
+      const averageCurrent = accumulatedCurrent / count;
+      const newData = {
+        //name: formatToTime(lastTime),
+        name: formatDateTimeWithoutYear(new Date(lastTime)),
+        value: averageCurrent
+      }
+      if (!data.some(item => item.name === newData.name /*&& item.value === newData.value*/)) {
+        data.push(newData);
+      }
+      // data.push({
+      //   name: formatDateTimeWithoutYear(new Date(lastTime)),
+      //   value: averageCurrent
+      // });
+    }
+  }
+  else if(isOneDaysVoltageSelected) {
+    let accumulatedCurrent = 0;
+    let count = 0;
+    let lastTime = new Date(deviceDataInOneDays[deviceDataInOneDays.length - 1].time); // Start from the most recent time
+    
+    for (let i = deviceDataInOneDays.length - 1; i >= 0; i--) {
+      const device = deviceDataInOneDays[i];
+      const deviceTime = new Date(device.time);
+      
+      
+      // Check if 8 hours have passed
+      if (Math.abs(deviceTime - lastTime) >= 1 * 60 * 60 * 1000) {
         if (count > 0) {
           // Calculate the average and push the data
           const averageCurrent = accumulatedCurrent / count;

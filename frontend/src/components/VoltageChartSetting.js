@@ -4,7 +4,9 @@ import { useDeviceContext } from './DeviceContent';
 function VoltageChartSetting() {
   const [selectedDataOption, setSelectedDataOption] = useState(null);
   const [selectedTimeOption, setSelectedTimeOption] = useState(null); 
-  const {isVoltageSettingsSelected, setIsVoltageSettingsSelected, chartDateChanged, setChartDateChanged, isLoading, setIsLoading, isTenDaysVoltageSelected, setIsTenDaysVoltageSelected, settenDaysDataAdded, isVoltageChartLoading, setIsVoltageChartLoading, isVoltageSelected, setIsVoltageSelected} = useDeviceContext();
+  const {isVoltageSettingsSelected, setIsVoltageSettingsSelected, chartDateChanged, setChartDateChanged, isLoading, setIsLoading, isTenDaysVoltageSelected, setIsTenDaysVoltageSelected, settenDaysDataAdded, isVoltageChartLoading, setIsVoltageChartLoading, isVoltageSelected, setIsVoltageSelected,
+    setOneDaysDataAdded, isOneDaysVoltageSelected, setIsOneDaysVoltageSelected
+  } = useDeviceContext();
 
   const handleDataChange = (option) => {
     setSelectedDataOption(option);
@@ -28,6 +30,8 @@ function VoltageChartSetting() {
 
     if(isTenDaysVoltageSelected) {
       setSelectedTimeOption("10days");
+    }else if(isOneDaysVoltageSelected){
+      setSelectedTimeOption("Oneday");
     }else { 
       setSelectedTimeOption("live");
     } 
@@ -39,14 +43,22 @@ function VoltageChartSetting() {
         setIsVoltageChartLoading(true);
         setChartDateChanged(true);
         setIsTenDaysVoltageSelected(true);
-        
+        setIsOneDaysVoltageSelected(false);
         setIsVoltageSettingsSelected(false);
     }
     else if(selectedTimeOption === "live") {
       setIsVoltageChartLoading(true);
       setIsTenDaysVoltageSelected(false);
       setIsVoltageSettingsSelected(false);
-       setChartDateChanged(true);
+      setIsOneDaysVoltageSelected(false);
+      setChartDateChanged(true);
+       
+    }else if(selectedTimeOption === "Oneday") {
+      setIsVoltageChartLoading(true);
+        setChartDateChanged(true);
+        setIsTenDaysVoltageSelected(false);
+        setIsOneDaysVoltageSelected(true);
+        setIsVoltageSettingsSelected(false);
     }
 
     if(selectedDataOption === "voltage") {
@@ -105,6 +117,17 @@ function VoltageChartSetting() {
           <span className="checkmark"></span>
           7 Days
         </label>
+
+        <label className="CheckboxLabel">
+          <input
+            type="checkbox"
+            checked={selectedTimeOption === "Oneday"}
+            onChange={() => handleTimeChange("Oneday")}
+          />
+          <span className="checkmark"></span>
+          1 Day
+        </label>
+
         <label className="CheckboxLabel">
           <input
             type="checkbox"

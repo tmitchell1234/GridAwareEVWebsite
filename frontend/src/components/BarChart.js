@@ -12,7 +12,8 @@ function CustomBarChart() {
   const chartContainerRef = useRef(null);
   const [containerWidth, setContainerWidth] = useState(250);
   const { deviceDataInRecentTime, isTenDaysVoltageSelected, isLoading, 
-        isChargingHistoryLoading, isChargingHistoryTenDaysSelected, deviceDataInTenDays
+        isChargingHistoryLoading, isChargingHistoryTenDaysSelected, deviceDataInTenDays,
+        deviceDataInOneDays, isChargingHistoryOneDaysSelected
        } = useDeviceContext();
   const dateShowing = [];
   const [numOfTicks, setNumOfTicks] = useState(0);
@@ -94,6 +95,7 @@ function CustomBarChart() {
   deviceDataInRecentTime.sort((a, b) => new Date(a.time) - new Date(b.time)); // Sort by time (oldest to newest)
   // Sort the deviceDataInTenDays by time
   deviceDataInTenDays.sort((a, b) => new Date(a.time) - new Date(b.time));
+  deviceDataInOneDays.sort((a, b) => new Date(a.time) - new Date(b.time));
 
   // console.log("Device In Recent Time: ", deviceDataInRecentTime);
 
@@ -142,11 +144,78 @@ function CustomBarChart() {
     }
 
     // Push any remaining data after the loop
-    chartData.push({
+    // chartData.push({
+    //   month: formatDateTimeWithoutYear(lastDeviceHourStoring),/*formatToTime(lastDeviceHourStoring),*/
+    //   desktop: numOfTransitions/5, // divide by 5 to make the chart more readable ( lines wouldnt be as long)
+    //   is_charging: "Halted " + numOfTransitions + " times"
+    // });
+    const newData = {
       month: formatDateTimeWithoutYear(lastDeviceHourStoring),/*formatToTime(lastDeviceHourStoring),*/
       desktop: numOfTransitions/5, // divide by 5 to make the chart more readable ( lines wouldnt be as long)
       is_charging: "Halted " + numOfTransitions + " times"
-    });
+    }
+    if (!chartData.some(item => item.month === newData.month /*&& item.value === newData.value*/)) {
+      chartData.push(newData);
+    }
+
+    dateShowing.push(lastDeviceHourStoring);
+  }else if(isChargingHistoryOneDaysSelected) {
+    let numOfTransitions = 0;
+    let lastDeviceChargingState = deviceDataInOneDays[deviceDataInOneDays.length - 1].is_charging ? "Charging" : "Not Charging";
+    let lastDeviceHour = new Date(deviceDataInOneDays[deviceDataInOneDays.length - 1].time).getHours();
+    let lastDeviceHourStoring = new Date(deviceDataInOneDays[deviceDataInOneDays.length - 1].time);
+
+    for (let i = deviceDataInOneDays.length - 1; i >= 0; i--) {
+      const device = deviceDataInOneDays[i];
+      const currentDeviceHour = new Date(device.time).getHours();
+
+      // If the current hour matches the last recorded hour
+      if (lastDeviceHour === currentDeviceHour) {
+        // If the charging state has changed, count it as a transition
+        if (device.is_charging !== (lastDeviceChargingState === "Charging")) {
+          numOfTransitions++;
+        }
+
+        
+        lastDeviceChargingState = device.is_charging ? "Charging" : "Not Charging";
+      } else {
+        // Push the accumulated transitions to the tempChartData array
+        chartData.push({
+          month: formatDateTimeWithoutYear(lastDeviceHourStoring),
+          desktop: numOfTransitions/5, // divide by 5 to make the chart more readable ( lines wouldnt be as long)
+          is_charging: "Halted " + numOfTransitions + " times"
+        });
+
+        if(chartData.length === 1) {
+          dateShowing.push(lastDeviceHourStoring);
+        }
+
+        // Reset for the new hour
+        lastDeviceHour = currentDeviceHour;
+        lastDeviceHourStoring = new Date(device.time);
+        numOfTransitions = 0;
+
+        // Update the last device charging state
+        lastDeviceChargingState = device.is_charging ? "Charging" : "Not Charging";
+      }
+    }
+
+    // Push any remaining data after the loop
+    // chartData.push({
+    //   month: formatDateTimeWithoutYear(lastDeviceHourStoring),/*formatToTime(lastDeviceHourStoring),*/
+    //   desktop: numOfTransitions/5, // divide by 5 to make the chart more readable ( lines wouldnt be as long)
+    //   is_charging: "Halted " + numOfTransitions + " times"
+    // });
+
+    const newData = {
+      month: formatDateTimeWithoutYear(lastDeviceHourStoring),/*formatToTime(lastDeviceHourStoring),*/
+      desktop: numOfTransitions/5, // divide by 5 to make the chart more readable ( lines wouldnt be as long)
+      is_charging: "Halted " + numOfTransitions + " times"
+    }
+    if (!chartData.some(item => item.month === newData.month /*&& item.value === newData.value*/)) {
+      chartData.push(newData);
+    }
+
 
     dateShowing.push(lastDeviceHourStoring);
   }

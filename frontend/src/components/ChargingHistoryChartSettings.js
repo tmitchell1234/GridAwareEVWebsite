@@ -5,7 +5,8 @@ function ChargingHistoryChartSettings() {
   const [selectedTimeOption, setSelectedTimeOption] = useState(null); 
   const {chartDateChanged, setChartDateChanged, isLoading, setIsLoading,
         setIsChargingHisorySettingsSelected, setIsChargingHistoryLoading, 
-        isChargingHistoryTenDaysSelected, setIsChargingHistoryTenDaysSelected
+        isChargingHistoryTenDaysSelected, setIsChargingHistoryTenDaysSelected,
+        isChargingHistoryOneDaysSelected, setIsChargingHistoryOneDaysSelected
     } = useDeviceContext();
 
 
@@ -20,6 +21,8 @@ function ChargingHistoryChartSettings() {
     // console.log("10 Days Voltage Selected:", isChargingHistoryTenDaysSelected);
     if(isChargingHistoryTenDaysSelected) {
       setSelectedTimeOption("10days");
+    }else if(isChargingHistoryOneDaysSelected){
+      setSelectedTimeOption("Oneday");
     }else { 
       setSelectedTimeOption("live");
     } 
@@ -31,12 +34,19 @@ function ChargingHistoryChartSettings() {
         setIsChargingHistoryLoading(true);
         setChartDateChanged(true);
         setIsChargingHistoryTenDaysSelected(true);
-        
+        setIsChargingHistoryOneDaysSelected(false);
+        setIsChargingHisorySettingsSelected(false);
+    }else if(selectedTimeOption === "Oneday") {
+      setIsChargingHistoryLoading(true);
+        setChartDateChanged(true);
+        setIsChargingHistoryTenDaysSelected(false);
+        setIsChargingHistoryOneDaysSelected(true);
         setIsChargingHisorySettingsSelected(false);
     }
     else if(selectedTimeOption === "live") {
         setIsChargingHistoryLoading(true);
         setIsChargingHistoryTenDaysSelected(false);
+        setIsChargingHistoryOneDaysSelected(false);
         setIsChargingHisorySettingsSelected(false);
        setChartDateChanged(true);
     }
@@ -62,6 +72,18 @@ function ChargingHistoryChartSettings() {
           <span className="checkmark"></span>
           7 Days
         </label>
+
+        <label className="CheckboxLabel">
+          <input
+            type="checkbox"
+            checked={selectedTimeOption === "Oneday"}
+            onChange={() => handleTimeChange("Oneday")}
+          />
+          <span className="checkmark"></span>
+          1 Day
+        </label>
+
+
         <label className="CheckboxLabel">
           <input
             type="checkbox"
