@@ -60,7 +60,7 @@ function CustomBarChart() {
     const formattedHours = hours % 12 || 12; // Convert to 12-hour format
     const formattedMinutes = minutes.toString().padStart(2, '0');
     const formattedSeconds = seconds.toString().padStart(2, '0');
-    if(isChargingHistoryTenDaysSelected) {
+    if(isChargingHistoryTenDaysSelected || isChargingHistoryOneDaysSelected) {
       return `${formattedHours}:${formattedMinutes} ${period}`;
     }else{
       return `${formattedHours}:${formattedMinutes}.${formattedSeconds} ${period}`;
@@ -378,6 +378,7 @@ function CustomBarChart() {
       <>
       <div className="card-header">
         {/* <p>January - June 2024</p> */}
+        {isChargingHistoryOneDaysSelected ? <p>Showing Halting History for the past 24 hours</p> : <h3></h3>}
         <p>{`${formattedFirstDate} - ${formattedLastDate}`}</p>
       </div>
       <div className="card-content">
@@ -405,7 +406,7 @@ function CustomBarChart() {
               return [`${is_charging}`]; // Display only charging status
             }} 
           />
-          {isChargingHistoryTenDaysSelected ? (
+          {isChargingHistoryTenDaysSelected || isChargingHistoryOneDaysSelected ? (
             <Bar dataKey="desktop" fill="teal" radius={5} />) : (
               <Bar dataKey="desktop" radius={5}>
               {chartData.map((entry, index) => (

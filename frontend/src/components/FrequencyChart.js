@@ -335,7 +335,17 @@ function FrequencyChart() {
             <p>{`${formattedFirstDate} - ${formattedLastDate}`}</p>
           </>
         ) : (
+          <>
+          {isOneDaysVoltageSelected ? (
+            <>
+            <p>Showing average voltage for the past 24 hours</p>
+            </>
+          ) : (
+            <>
+            </>
+          )}
           <p>{`${formattedFirstDate} - ${formattedLastDate}`}</p>
+          </>
         )}
       </div>
       <ResponsiveContainer width="100%" height={300}>

@@ -9,7 +9,7 @@ const DeviceMap = ({ width = 1195, height = 430 }) => {
   const zoomRef = useRef(d3.zoom());
   const [zoomLevel, setZoomLevel] = useState(1);
   const [worldMap, setWorldMap] = useState(null);
-  const { deviceCordinates, deviceColors } = useDeviceContext();
+  const { deviceCordinates, deviceColors, currentDeviceShowing, setCurrentDeviceShowing, devices, settenDaysDataAdded, setOneDaysDataAdded} = useDeviceContext();
   const data = deviceCordinates;
 
   // Fetch world map data
@@ -77,13 +77,35 @@ const DeviceMap = ({ width = 1195, height = 430 }) => {
         .attr('id', (d, i) => `device-${i}`) // Add ID to track devices
         .attr('fill-opacity', 0.6)
         .attr('stroke', 'black')
-        .attr('stroke-width', d => Math.max(0.45, 1 / transform.k));
+        .attr('stroke-width', d => Math.max(0.45, 1 / transform.k))
+        .attr('data-index', (d, i) => i)
+        // to select the device the user clicks on
+        .on('click', (event, d) => {
+          // Log the details of the clicked bubble
+          if (d.properties && d.properties.name) {
+            const parts = d.properties.name.split(' '); // Split the string by spaces
+            const secondPart = parts[1]; // Access the second part of the name which is the device mac address
+            const index = d3.select(event.currentTarget).attr('data-index');
+            // console.log('Second part of the name:', secondPart);
+            // console.log(currentDeviceShowing);
+            // console.log("Device Clicked On: " + devices[index].device_mac_address);
+            if(secondPart != currentDeviceShowing.device_mac_address){
+              // console.log('This is the device on the charts up top');
+              // console.log('Array index of the clicked bubble: ', index);
+              // console.log(devices[index].device_mac_address);
+              setCurrentDeviceShowing(devices[index].device_mac_address);
+              settenDaysDataAdded(false);
+              setOneDaysDataAdded(false);
+            }
+          }
+    
+        });
 
       bubbles.exit().remove();
     };
 
     const zoom = zoomRef.current
-      .scaleExtent([1, 8])
+      .scaleExtent([1, 16])
       .on('zoom', (event) => {
         const transform = event.transform;
         setZoomLevel(transform.k);

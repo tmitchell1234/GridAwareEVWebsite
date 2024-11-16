@@ -50,6 +50,27 @@ function CurrentChart() {
   //     name: device.time,
   //     value: device.voltage,
   // }));
+
+  const formatToTime = (date) => {
+    if (!date) return ""; // Handle undefined dates
+    const utcDate = new Date(date);
+  
+    const hours = utcDate.getUTCHours();
+    const minutes = utcDate.getUTCMinutes();
+    const seconds = utcDate.getUTCSeconds();
+    
+    const period = hours >= 12 ? 'PM' : 'AM';
+    const formattedHours = hours % 12 || 12; // Convert to 12-hour format
+    const formattedMinutes = minutes.toString().padStart(2, '0');
+    const formattedSeconds = seconds.toString().padStart(2, '0');
+  
+    if(isTenDaysVoltageSelected) {
+      return `${formattedHours}:${formattedMinutes} ${period}`;
+    }else{
+      return `${formattedHours}:${formattedMinutes}.${formattedSeconds} ${period}`;
+    }
+  };
+
   const formatDateTime = (date) => {
     if (!date) return ""; // Handle undefined dates
   
@@ -105,6 +126,63 @@ function CurrentChart() {
   
     // return date.toLocaleString('en-US', options); 
   }
+
+
+  // const formatDateTime = (date) => {
+  //   if (!date) return ""; // Handle undefined dates
+  
+  //   const utcDate = new Date(date);
+  //   if (isNaN(utcDate.getTime())) {
+  //     return ""; // Return empty string if date is invalid
+  //   }
+
+  //   // Manually format each component
+  //   const month = utcDate.toLocaleString('en-US', { month: 'long', timeZone: 'UTC' });
+  //   const day = utcDate.getUTCDate();
+  //   const year = utcDate.getUTCFullYear();
+    
+  //   const hours = utcDate.getUTCHours();
+  //   const minutes = utcDate.getUTCMinutes();
+    
+  //   // Convert to 12-hour format and determine AM/PM
+  //   const period = hours >= 12 ? 'PM' : 'AM';
+  //   const formattedHours = hours % 12 || 12; // Handles 12-hour format, with "0" as "12"
+  //   const formattedMinutes = minutes.toString().padStart(2, '0'); // Pad minutes
+
+  //   return `${month} ${day}, ${year}, ${formattedHours}:${formattedMinutes} ${period}`;
+  // };
+
+  // function formatDateTimeWithoutYear(date) {
+  //   if (!date) return ""; // Handle undefined dates
+  
+  //   const utcDate = new Date(date);
+  //   if (isNaN(utcDate.getTime())) {
+  //     return ""; // Return empty string if date is invalid
+  //   }
+
+  //   // Extract month, day, hours, and minutes manually
+  //   const month = utcDate.toLocaleString('en-US', { month: 'long', timeZone: 'UTC' });
+  //   const day = utcDate.getUTCDate();
+    
+  //   const hours = utcDate.getUTCHours();
+  //   const minutes = utcDate.getUTCMinutes();
+
+  //   // Convert to 12-hour format and determine AM/PM
+  //   const period = hours >= 12 ? 'PM' : 'AM';
+  //   const formattedHours = hours % 12 || 12; // Handles 12-hour format, with "0" as "12"
+  //   const formattedMinutes = minutes.toString().padStart(2, '0'); // Pad minutes
+
+  //   return `${month} ${day}, ${formattedHours}:${formattedMinutes} ${period}`;
+  //   // const options = {
+  //   //   month: 'long',  
+  //   //   day: 'numeric',  
+  //   //   hour: 'numeric', 
+  //   //   minute: 'numeric', 
+  //   //   hour12: true,  
+  //   // };
+  
+  //   // return date.toLocaleString('en-US', options); 
+  // }
 
   const data = [];
 
@@ -239,7 +317,7 @@ function CurrentChart() {
         if (data.length > 0 && device.current !== data[data.length - 1].current) {
           // Push the data if charging status changes
           data.push({
-            name: formatDateTime(new Date(device.time)),
+            name: formatToTime(new Date(device.time)),
             value: device.current,
           });
       
@@ -252,7 +330,7 @@ function CurrentChart() {
         // will make replace the last data in array to only display when the current changed since we are going inreverse o get the most recent data
         else if (data.length > 0 && device.current === data[data.length - 1].current) {
           data[data.length - 1] = {
-            name: formatDateTime(new Date(device.time)),
+            name: formatToTime(new Date(device.time)),
             value: device.current,
           };
       
@@ -265,7 +343,7 @@ function CurrentChart() {
         else if (data.length === 0) {
           dateShowing.push(device.time);
           data.push({
-            name: formatDateTime(new Date(device.time)),
+            name: formatToTime(new Date(device.time)),
             value: device.current,
           });
         }
@@ -300,7 +378,17 @@ function CurrentChart() {
             <p>{`${formattedFirstDate} - ${formattedLastDate}`}</p>
           </>
         ) : (
+          <>
+          {isOneDaysVoltageSelected ? (
+            <>
+            <p>Showing average current for the past 24 hours</p>
+            </>
+          ) : (
+            <>
+            </>
+          )}
           <p>{`${formattedFirstDate} - ${formattedLastDate}`}</p>
+          </>
         )}
       </div>
       <ResponsiveContainer width="100%" height={300}>

@@ -199,7 +199,8 @@ const CustomerDashboard = () => {
     isChargingHisorySettingsSelected, setIsChargingHisorySettingsSelected, isChargingHistoryLoading, setIsChargingHistoryLoading, isChargingHistoryTenDaysSelected, setIsChargingHistoryTenDaysSelected,
     deviceCordinates, setDeviceCordinates, isMapLoading, setIsMapLoading, deviceLocationsFetched, setDeviceLocationsFetched, deviceColors, setDeviceColors,
     deviceDataInOneDays, setDeviceDataInOneDays, oneDaysDataAdded, setOneDaysDataAdded, isOneDaysVoltageSelected, setIsOneDaysVoltageSelected, 
-    isFrequencyOneDaysSelected, setIsFrequencyOneDaysSelected, isChargingHistoryOneDaysSelected, setIsChargingHistoryOneDaysSelected
+    isFrequencyOneDaysSelected, setIsFrequencyOneDaysSelected, isChargingHistoryOneDaysSelected, setIsChargingHistoryOneDaysSelected,
+    currentDeviceShowing, setCurrentDeviceShowing
   } = useDeviceContext();
   const [dontFetchData, setDontFetchData] = useState(false);
   let deviceCordimates = {};
@@ -253,6 +254,7 @@ const CustomerDashboard = () => {
       const data = await response.json();
       // console.log('User devices:', data);
       setDevices(data); // Store devices in state
+      setCurrentDeviceShowing(data[0]);
       // logMacAddress();
     } catch (error) {
       console.error('Error:', error);
@@ -272,6 +274,7 @@ const CustomerDashboard = () => {
       setIsChargingHistoryLoading(true);
       try {
         const data = await getDataInRecentTimeInterval(devices[0].device_mac_address, 5.0);
+        // const data = await getDataInRecentTimeInterval(currentDeviceShowing.device_mac_address, 5.0);
         setDeviceDataInRecentTime(data);
         // console.log("Latest Fetched Data: ", data[data.length - 1]);
         // console.log(" ", data);
@@ -288,6 +291,7 @@ const CustomerDashboard = () => {
     const fetchNewDData = async () => {
       try {
         const data = await getDataInRecentTimeInterval(devices[0].device_mac_address, 5.0);
+        // const data = await getDataInRecentTimeInterval(currentDeviceShowing.device_mac_address, 5.0);
         setDeviceDataInRecentTime(data);
       } catch (error) {
         console.error("Error fetching data:", error);
@@ -326,7 +330,8 @@ const CustomerDashboard = () => {
     const fetchNewData = async (duration) => {
       if (devices && devices.length > 0) {
         try {
-          const data = await getDataInRecentTimeInterval(devices[0].device_mac_address, duration);
+          // const data = await getDataInRecentTimeInterval(devices[0].device_mac_address, duration);
+          const data = await getDataInRecentTimeInterval(currentDeviceShowing.device_mac_address, duration);
           if(!oneDaysDataAdded){
             setDeviceDataInOneDays(data);
           }
@@ -421,21 +426,32 @@ const CustomerDashboard = () => {
     const lat = parseFloat(centerLat);
   
     // Define incremental changes for longitude and latitude
-    const deltaLon = 0.5;
-    const deltaLat = 0.3;
+    const deltaLon = 0.3;
+    const deltaLat = 0.1;
   
     // Approximate a polygon with more points, altering around the center
     const polygonCoordinates = [
-      [lon, lat + deltaLat * 1.2],
-      [lon + deltaLon * 0.5, lat + deltaLat * 0.7],
-      [lon + deltaLon, lat],
-      [lon + deltaLon * 0.5, lat - deltaLat * 0.7],
-      [lon, lat - deltaLat * 1.2],
-      [lon - deltaLon * 0.5, lat - deltaLat * 0.7],
-      [lon - deltaLon, lat],
-      [lon - deltaLon * 0.5, lat + deltaLat * 0.7],
-      [lon, lat + deltaLat * 1.2],  // Close the loop
+      [lon, lat + deltaLat * 2.0],  //size
+      [lon + deltaLon * 1.5, lat + deltaLat * 1.5],  //width and height
+      [lon + deltaLon * 2.0, lat],  //size
+      [lon + deltaLon * 1.5, lat - deltaLat * 1.5],
+      [lon, lat - deltaLat * 2.0],
+      [lon - deltaLon * 1.5, lat - deltaLat * 1.5],
+      [lon - deltaLon * 2.0, lat],
+      [lon - deltaLon * 1.5, lat + deltaLat * 1.5],
+      [lon, lat + deltaLat * 2.0],  // Close the loop
     ];
+    // const polygonCoordinates = [
+    //   [lon, lat + deltaLat * 1.2],
+    //   [lon + deltaLon * 0.5, lat + deltaLat * 0.7],
+    //   [lon + deltaLon, lat],
+    //   [lon + deltaLon * 0.5, lat - deltaLat * 0.7],
+    //   [lon, lat - deltaLat * 1.2],
+    //   [lon - deltaLon * 0.5, lat - deltaLat * 0.7],
+    //   [lon - deltaLon, lat],
+    //   [lon - deltaLon * 0.5, lat + deltaLat * 0.7],
+    //   [lon, lat + deltaLat * 1.2],  // Close the loop
+    // ];
   
     return [polygonCoordinates];
   }
@@ -470,7 +486,6 @@ const CustomerDashboard = () => {
             const data = await response.json();
             // console.log('IP Data:', data);
             // console.log('IP Data:', data); 
-    
             if (data.latitude && data.longitude) {
               const cordinatePolygone = generatePolygonAroundPoint(data.longitude, data.latitude);
               // Create a feature for this device
@@ -489,10 +504,10 @@ const CustomerDashboard = () => {
               };
 
 
-    
-              // Add the feature to our combined GeoJSON
               combinedGeoJSON.features.push(feature);
+
             }
+
           } catch (error) {
             console.error(`Error fetching data for IP ${deviceIP}:`, error);
           }
@@ -500,6 +515,8 @@ const CustomerDashboard = () => {
 
         // Update state after all fetches complete
         setDeviceCordinates(combinedGeoJSON);
+
+        
         // setIsMapLoading(false);
         // console.log('Device Coordinates:', deviceCordinates);
       }
@@ -727,7 +744,14 @@ const CustomerDashboard = () => {
                   {isChargingHistoryTenDaysSelected ? (
                           <h2 style={{ clear: 'left' }}>Halting History</h2>
                         ) : (
-                          <h2 style={{ clear: 'left' }}>Charging History</h2>
+                          <>
+                          {isChargingHistoryOneDaysSelected ? (
+                            <>
+                            <h2 style={{ clear: 'left' }}>Halting History</h2>
+                            </>
+                            ) : (<h2 style={{ clear: 'left' }}>Charging History</h2>)}
+                          </>
+                          
                         )}
                         <BatteryGauge 
                           value={deviceDataInRecentTime[deviceDataInRecentTime.length - 1]?.battery_percentage} 

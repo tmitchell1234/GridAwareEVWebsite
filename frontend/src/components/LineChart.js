@@ -281,6 +281,7 @@ function LineChart() {
     ) : (
       <>
       <div className="card-header">
+        {isFrequencyOneDaysSelected ? <p>Showing average frequency for the past 24 hours</p> : <h3></h3>}
         <p>{`${formattedFirstDate} - ${formattedLastDate}`}</p>
       </div>
       <div className="card-content">

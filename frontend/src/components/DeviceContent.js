@@ -29,6 +29,7 @@ export const DeviceProvider = ({ children }) => {
   const [isMapLoading, setIsMapLoading] = useState(true);
   const [deviceLocationsFetched, setDeviceLocationsFetched] = useState(false);
   const [deviceColors, setDeviceColors] = useState([]);
+  const [currentDeviceShowing, setCurrentDeviceShowing] = useState({});
   
 
   return (
@@ -40,7 +41,8 @@ export const DeviceProvider = ({ children }) => {
     deviceCordinates, setDeviceCordinates, isMapLoading, setIsMapLoading, deviceLocationsFetched, setDeviceLocationsFetched, deviceColors, setDeviceColors,
     deviceDataInOneDays, setDeviceDataInOneDays, oneDaysDataAdded, setOneDaysDataAdded, isOneDaysVoltageSelected, setIsOneDaysVoltageSelected,
     isFrequencyOneDaysSelected, setIsFrequencyOneDaysSelected,
-    isChargingHistoryOneDaysSelected, setIsChargingHistoryOneDaysSelected
+    isChargingHistoryOneDaysSelected, setIsChargingHistoryOneDaysSelected,
+    currentDeviceShowing, setCurrentDeviceShowing
     }}>
       {children}
     </DeviceContent.Provider>
