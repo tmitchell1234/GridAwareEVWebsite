@@ -170,7 +170,7 @@ function FrequencyChart() {
       if(data.length === 1 && dateShowing.length === 0) {
         dateShowing.push(lastTime);
         // dateShowing.push(deviceDataInTenDays[0].time);
-        console.log("FIRST DATE : ", lastTime);
+        // console.log("FIRST DATE : ", lastTime);
       }
       
     
@@ -234,7 +234,7 @@ function FrequencyChart() {
       if(data.length === 1 && dateShowing.length === 0) {
         dateShowing.push(lastTime);
         // dateShowing.push(deviceDataInTenDays[0].time);
-        console.log("FIRST DATE : ", lastTime);
+        // console.log("FIRST DATE : ", lastTime);
       }
       
     

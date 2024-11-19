@@ -162,7 +162,7 @@ const Sidebar = ({ setSelected }) => {
         {[
           { label: 'Dashboard', href: '#', icon: <FaHome style={iconStyle} />,  onClick: () => handlePageSelection('Dashboard')},
           { label: 'Profile', href: '#', icon: <FaUser style={iconStyle} />,  onClick: () => handlePageSelection('Profile')},
-          { label: 'Settings', href: '#', icon: <FaCog style={iconStyle} />,  onClick: () => handlePageSelection('Settings')},
+          // { label: 'Settings', href: '#', icon: <FaCog style={iconStyle} />,  onClick: () => handlePageSelection('Settings')},
           { label: 'Logout', href: '#', icon: <FaSignOutAlt style={iconStyle} />, onClick: handleLogout }, 
         ].map((link, index) => (
           <a
@@ -208,9 +208,43 @@ const CustomerDashboard = () => {
     type: 'FeatureCollection',
     features: []
   };
+  const [userPersonalData, setUserPersonalData] = useState({
+    user_organization: null, 
+  });
+  
   // const [isLoading, setIsLoading] = useState(true);
   // const [chartDateChanged, setChartDateChanged] = useState(false);
   // setIsVoltageSettingsSelected(false);
+
+  useEffect(() => {
+    if(isSelected === 'Dashboard'){
+      const fetchUserInfo = async () => {
+        const user = {
+          api_key: apiKey,
+          user_jwt: localStorage.getItem('jwt'),
+        };
+        try {
+          const response = await fetch('https://gridawarecharging.com/api/get_user_info', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(user),
+          });
+          
+          if(response.ok){
+            const data = await response.json();
+            setUserPersonalData(data);
+            
+          }
+        } catch (error) {
+          console.error('Error:', error);
+        }
+      };
+      fetchUserInfo();
+
+    }
+  }, [isSelected]);
 
 
   
@@ -247,7 +281,7 @@ const CustomerDashboard = () => {
       });
 
       if (!response.ok) {
-        alert('Failed to retrieve user devices.');
+        // alert('Failed to retrieve user devices.');
         return;
       }
 
@@ -633,11 +667,11 @@ const CustomerDashboard = () => {
         }
       } else {
         console.error('Error retrieving data:', response.status);
-        alert('Failed to retrieve data. Status code: ' + response.status);
+        // alert('Failed to retrieve data. Status code: ' + response.status);
       }
     } catch (error) {
       console.error('Error during the fetch operation:', error);
-      alert('Error retrieving data.');
+      // alert('Error retrieving data.');
     }
   };
 
@@ -650,7 +684,8 @@ const CustomerDashboard = () => {
       <div className="dashboardcontainer" style={contentStyle}>
         {isSelected === 'Dashboard' && (
           <>
-          
+          {(userPersonalData) && (userPersonalData.user_organization !== undefined) && userPersonalData.user_organization !== null &&  userPersonalData.user_organization !== 'none' && userPersonalData.user_organization !==""? (
+            <>
             <h1 className="text-2xl font-bold mb-4">Dashboard</h1>
             
             
@@ -801,6 +836,156 @@ const CustomerDashboard = () => {
               )}
               
             </div>
+            </>
+          ) : (
+            <>
+              <h1 className="text-2xl font-bold mb-4">Dashboard</h1>
+              
+              
+              <div className="nonAdminstativecharts-container">
+                <div className="voltageandHistoryContainer">
+                  <div className="nonadministativefrequencyChart">
+                    {!isVoltageSettingsSelected ?(
+                      <>
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                  {isVoltageSelected ? ( // have measurement value : (voltage is just watts) and (current AMP)
+                    <> 
+                    <h2 style={{ clear: 'left' }}>Voltage</h2>
+                    </>
+                  ) : (
+                    <>
+                    <h2 style={{ clear: 'left' }}>Current</h2>
+                    </>
+                  )}
+                    <button
+                      style={{ 
+                        background: 'transparent', 
+                        border: 'none', 
+                        width: '28px', 
+                        height: '28px',
+                        cursor: 'pointer',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        borderRadius: '50%', 
+                      }}
+                      className="VoltageSettings"
+                      onClick={() => setIsVoltageSettingsSelected(true)}
+                    >
+                      <FontAwesomeIcon icon={faGear} style={{ fontSize: '28px', padding: '0' }} />
+                    </button>
+                  </div>
+                    {isVoltageSelected ? ( // adding a loading animation hereee  while loading devices readings 
+                      <FrequencyChart />
+                    ) : (
+                      <CurrentChart />
+                    // <>
+                    // <p>current here</p>
+                    // </>
+                    )}
+                    </>
+                  ):(
+                    <>
+                    <VoltageChartSetting />
+                    </>
+                  )}
+                  </div>
+                  <div className="nonadministrativeChargingHistoryBarChart">
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                      {isChargingHistoryTenDaysSelected ? (
+                              <h2 style={{ clear: 'left' }}>Halting History</h2>
+                            ) : (
+                              <>
+                              {isChargingHistoryOneDaysSelected ? (
+                                <>
+                                <h2 style={{ clear: 'left' }}>Halting History</h2>
+                                </>
+                                ) : (<h2 style={{ clear: 'left' }}>Charging History</h2>)}
+                              </>
+                              
+                            )}
+                            <BatteryGauge
+                              value={deviceDataInRecentTime[deviceDataInRecentTime.length - 1]?.battery_percentage} 
+                              animated="true"
+                              size='90'
+                              charging={deviceDataInRecentTime[deviceDataInRecentTime.length - 1]?.is_charging}
+                            />
+                      
+                      <button
+                        style={{ 
+                          background: 'transparent', 
+                          border: 'none', 
+                          width: '28px', 
+                          height: '28px',
+                          cursor: 'pointer',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          borderRadius: '50%', 
+                        }}
+                        className="ChargingHistorySettings"
+                        onClick={() => setIsChargingHisorySettingsSelected(true)}
+                      >
+                        <FontAwesomeIcon icon={faGear} style={{ fontSize: '28px', padding: '0' }} />
+                      </button>
+                    </div>
+                    {isChargingHisorySettingsSelected ? (
+                      <ChargingHistoryChartSettings />
+                    ) : (
+                      <>
+                        {isChargingHistoryTenDaysSelected ? (
+                          <p>Showing Halting History for the past 7 days</p>
+                        ) : (
+                          <></>
+                        )}
+                        <BarChart />
+                    </>
+                    )}
+                    
+                  </div>
+                </div>
+                <div className="nonadministrativeLineChartContainer">
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                    <h2 style={{ clear: 'left' }}>Frequency</h2>
+                    <button
+                      style={{ 
+                        background: 'transparent', 
+                        border: 'none', 
+                        width: '28px', 
+                        height: '28px',
+                        cursor: 'pointer',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        borderRadius: '50%', 
+                      }}
+                      className="FrequencySettings"
+
+                      onClick={() => setIsFrequencyChartSettingsSelected(true)}
+                    >
+                      <FontAwesomeIcon icon={faGear} style={{ fontSize: '28px', padding: '0' }} />
+                    </button>
+                  </div>
+                  {isFrequencyChartSettingsSelected ? (
+                    <FrequencyChartSetting />
+                  ) : (
+                    <>
+                      {isFrequencyTenDaysSelected ? (
+                        <p>Showing average frequency for the past 7 days</p>  // have the bound be 58 - 62 on the graph 
+                      ) : (
+                        <></>
+                      )}
+                      <LineChart />
+                    </>
+                  )}
+                    
+                  
+                  
+                </div>
+                
+              </div>
+            </>
+          )}
           </>
         )}
 
@@ -811,12 +996,12 @@ const CustomerDashboard = () => {
           </>
         )}
 
-        {isSelected === 'Settings' && (
+        {/* {isSelected === 'Settings' && (
           <>
             <h1 className="text-2xl font-bold mb-4">Settings</h1>
             <p>This is the settings page content.</p>
           </>
-        )}
+        )} */}
       </div>
       
     </div>
