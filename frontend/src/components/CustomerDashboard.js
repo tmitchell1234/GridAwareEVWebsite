@@ -351,9 +351,12 @@ const CustomerDashboard = () => {
 
     const fetchNewDData = async () => {
       try {
-        const data = await getDataInRecentTimeInterval(devices[0].device_mac_address, 5.0);
-        // const data = await getDataInRecentTimeInterval(currentDeviceShowing.device_mac_address, 5.0);
+        // const data = await getDataInRecentTimeInterval(devices[0].device_mac_address, 5.0);
+        // if(currentDeviceShowing){
+        if(isSelected === 'Dashboard'){
+        const data = await getDataInRecentTimeInterval(currentDeviceShowing.device_mac_address, 5.0);
         setDeviceDataInRecentTime(data);
+        }
       } catch (error) {
         console.error("Error fetching data:", error);
       }
@@ -399,9 +402,9 @@ const CustomerDashboard = () => {
           if(!tenDaysDataAdded){
             setDeviceDataInTenDays(data);
           }
-          else{
-            setDeviceDataInRecentTime(data);
-          }
+          // else{
+          //   setDeviceDataInRecentTime(data);
+          // }
         } catch (error) {
           console.error("Error fetching data:", error);
         } finally {
@@ -448,10 +451,10 @@ const CustomerDashboard = () => {
     } else {
       // Always fetch the last 20 seconds data
       // console.log('Adding 20 seconds data');
-      if(!dontFetchData){
-        fetchNewData(15.0); // Last 20 seconds
-        // console.log('Fetching new data');
-      }
+      // if(!dontFetchData){
+      //   fetchNewData(15.0); // Last 20 seconds
+      //   // console.log('Fetching new data');
+      // }
       // else{
       //   console.log('Not fetching new data');
       // }
