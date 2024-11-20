@@ -262,7 +262,34 @@ const CustomerDashboard = () => {
     borderRadius: '15px',
     boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
     overflow: 'auto',
+    
   };
+
+  // const contentStyle = {
+  //   flex: 1,
+  //   padding: '20px',
+  //   margin: '20px',
+  //   backgroundColor: 'white',
+  //   borderRadius: '15px',
+  //   boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
+  //   overflow: 'auto',
+  //   width:
+  //     userPersonalData &&
+  //     userPersonalData.user_organization !== undefined &&
+  //     userPersonalData.user_organization !== null &&
+  //     userPersonalData.user_organization !== 'none' &&
+  //     userPersonalData.user_organization !== ""
+  //       ? '90%' 
+  //       : '100%',
+  //   height:
+  //     userPersonalData &&
+  //     userPersonalData.user_organization !== undefined &&
+  //     userPersonalData.user_organization !== null &&
+  //     userPersonalData.user_organization !== 'none' &&
+  //     userPersonalData.user_organization !== ""
+  //       ? '100%' 
+  //       : '80%',
+  // };
 
   // Function to fetch user devices
   const getUserDevices = async () => {
@@ -561,7 +588,7 @@ const CustomerDashboard = () => {
 
 
   useEffect(() => {
-    if (isSelected === 'Dashboard') {
+    if (isSelected === 'Dashboard' && ((userPersonalData) && (userPersonalData.user_organization !== undefined) && userPersonalData.user_organization !== null &&  userPersonalData.user_organization !== 'none' && userPersonalData.user_organization !=="")) {
       const updateDeviceColors = async () => {
         try {
           // Wait for all device data fetches to complete

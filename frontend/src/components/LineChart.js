@@ -18,6 +18,9 @@ function LineChart() {
     if (isFrequencyTenDaysSelected) {
       setTimeInterval(65); 
       setTickSlice(30);
+    }else if (isFrequencyOneDaysSelected) {
+      setTimeInterval(65); 
+      setTickSlice(30);
     } else {
       setTimeInterval(50); 
       setTickSlice(8);

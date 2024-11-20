@@ -9,6 +9,7 @@ function HomePage() {
   const [showBenefits, setshowBenefits] = useState(false);
   const [showHome, setShowHome] = useState(true);
   const [howItWorks, setHowItWorks] = useState(false);
+  const [aboutUs, setAboutUs] = useState(false);
 
   // Handle the toggle when the user clicks the "Features" link
   const toggleFeatures = () => {
@@ -16,6 +17,7 @@ function HomePage() {
     setShowHome(false);
     setHowItWorks(false);
     setshowBenefits(false);
+    setAboutUs(false);
   };
 
   const toggleBenefits = () => {
@@ -23,6 +25,7 @@ function HomePage() {
     setShowHome(false);
     setHowItWorks(false);
     setShowFeatures(false);
+    setAboutUs(false);
   };
 
   const toggleHome = () => {
@@ -30,6 +33,7 @@ function HomePage() {
     setShowFeatures(false);
     setshowBenefits(false);
     setHowItWorks(false);
+    setAboutUs(false);
   };
 
   const toggleHowItWorks = () => {
@@ -37,7 +41,17 @@ function HomePage() {
     setShowHome(false);
     setShowFeatures(false);
     setshowBenefits(false);
+    setAboutUs(false);
   }
+
+  const toggleAboutUs = () => {
+    setHowItWorks(false);
+    setShowHome(false);
+    setShowFeatures(false);
+    setshowBenefits(false);
+    setAboutUs(true);
+  }
+
 
   return (
     <AuroraBackground>
@@ -49,7 +63,7 @@ function HomePage() {
             <a href="#features" onClick={toggleFeatures}>Features</a>
             <a href="#how-it-works" onClick={toggleHowItWorks}>How It Works</a>
             <a href="#benefits" onClick={toggleBenefits}>Benefits</a>
-            <a href="#contact">Contact</a>
+            <a href="#about-us" onClick={toggleAboutUs}>About Us</a>
             <button className="homePageSigninButton" onClick={() => window.location.href = '/login'}>
               Login
             </button>
@@ -70,9 +84,20 @@ function HomePage() {
           )}
 
           {showFeatures && (
-            <section id="features">
-              <h2>Features</h2>
-              <ul>
+            <section 
+              id="features" 
+              style={{ 
+                padding: '20px', 
+                width: '300%',
+                backgroundColor: 'rgba(255, 255, 255, 0.2)', 
+                borderRadius: '20px', 
+                'margin-left': '-100%',
+                textAlign: 'center', 
+                boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)' 
+              }}
+            >
+              <h2 style={{ marginBottom: '20px', fontSize: '24px' }}>Features</h2>
+              <ul style={{ listStyleType: 'none', padding: '0', lineHeight: '2' }}>
                 <li>Real-time Grid Monitoring</li>
                 <li>Real-time Vehicle Status</li>
                 <li>User-friendly Interface</li>
@@ -81,22 +106,41 @@ function HomePage() {
             </section>
           )}
 
-          {showBenefits && (
-            <section id="benefits">
-              <h2>Benefits</h2>
-              <ul>
-                <li>Grid Stability</li>
-                <li>Data and Analysis</li>
-                <li>Fleet Management</li>
-                <li>Customer Attraction</li>
-                <li>Support For Green Initiatives</li>
-                <li>Energy Efficiency Reports</li>
-              </ul>
-            </section>
-          )}
+{showBenefits && (
+  <section 
+    id="benefits" 
+    style={{ 
+      padding: '20px', 
+      width: '300%', 
+      backgroundColor: 'rgba(255, 255, 255, 0.2)', 
+      borderRadius: '20px', 
+      marginLeft: '-100%', 
+      textAlign: 'center', 
+      boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)' 
+    }}
+  >
+    <h2 style={{ marginBottom: '20px', fontSize: '24px' }}>Benefits</h2>
+    <ul style={{ 
+      listStyleType: 'disc', 
+      listStylePosition: 'inside', 
+      display: 'inline-block', // Aligns the list in the center
+      margin: 0, 
+      padding: 0, 
+      textAlign: 'left', // Aligns bullet points and text properly
+      lineHeight: '1.8' // Adds spacing for readability
+    }}>
+      <li>Grid Stability</li>
+      <li>Data and Analysis</li>
+      <li>Fleet Management</li>
+      <li>Customer Attraction</li>
+      <li>Support For Green Initiatives</li>
+      <li>Energy Efficiency Reports</li>
+    </ul>
+  </section>
+)}
 
           {howItWorks && (
-            <section id="how-it-works">
+            <section id="how-it-works" style={{ padding: '20px', backgroundColor: 'rgba(255, 255, 255, 0.2)', borderRadius: '20px' }}>
             <h2>How It Works</h2>
             <p>Our Grid Aware EV Charging solution ensures efficient energy use and grid stability by pausing or halting charging when necessary to avoid grid overload.</p>
             <ul>
@@ -107,6 +151,48 @@ function HomePage() {
               <li><strong>Data Analytics & Reports:</strong> Receive detailed reports on charging history and energy consumption to help optimize usage.</li>
             </ul>
           </section>
+          )}
+
+          {aboutUs && (
+            <section id="about-us" style={{ padding: '20px', backgroundColor: 'rgba(255, 255, 255, 0.2)', borderRadius: '20px' }}>
+              <h2 style={{ textAlign: 'center', marginBottom: '20px' }}>About Us</h2>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '20px' }}>
+                {/* First row */}
+                <div>
+                  <h3>Dr. Qun Zhou Sun</h3>
+                  <p>Director of Smart Infrastructure Data Analytics Laboratory at UCF</p>
+                  <p>Our project sponsor</p>
+                  <p>Developed the stochastic algorithm</p>
+                </div>
+                <div>
+                  <h3>Ibraheim, Ames, and Erik</h3>
+                  <p>Research Assistants and Graduate Research Assistants</p>
+                  <p>Physical hardware development</p>
+                </div>
+
+                {/* Second row */}
+                <div>
+                  <h3>Samuel Pann</h3>
+                  <p>Hardware Integration</p>
+                  <p>ESP32 programming</p>
+                </div>
+                <div>
+                  <h3>Benjamin Belizaire</h3>
+                  <p>Mobile Development</p>
+                </div>
+
+                {/* Third row */}
+                <div>
+                  <h3>Tom Mitchell</h3>
+                  <p>Project Manager</p>
+                  <p>Server and Database Development</p>
+                </div>
+                <div>
+                  <h3>John Vea</h3>
+                  <p>Website Development</p>
+                </div>
+              </div>
+            </section>
           )}
         </div>
       </div>

@@ -25,6 +25,9 @@ function CustomBarChart() {
     if (isChargingHistoryTenDaysSelected) {
       setTimeInterval(20); 
       setTickSlice(10);
+    }else if(isChargingHistoryOneDaysSelected) {
+      setTimeInterval(18); 
+      setTickSlice(22);
     } else {
       setTimeInterval(5); 
       setTickSlice(5);
