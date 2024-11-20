@@ -1,8 +1,12 @@
 import React, { useState, useEffect } from 'react';
+import { useDeviceContext } from './DeviceContent';
 
 const AdminProfile = () => {
     const apiKey = process.env.REACT_APP_API_KEY;
     const UserToken = localStorage.getItem('jwt');
+    const {devices} = useDeviceContext();
+    const [isAllDevicesRemoved, setIsAllDevicesRemoved] = useState(true);
+
 
     // Parse and Decode JWT from cookie
     function parseJwt(token) {
@@ -169,9 +173,57 @@ const AdminProfile = () => {
     const handleDeleteAccount = async (e) => {
         // Show a confirmation dialog
         const isConfirmed = window.confirm("Are you sure you want to delete your account?");
-    
+        
         if (isConfirmed) {
-            await fetch('https://gridawarecharging.com/api/delete_user_account', {
+            if (devices.length > 0) {
+                try {
+                    const requests = devices.map(device =>
+                        fetch('https://gridawarecharging.com/api/unregister_device_by_user', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                            },
+                            body: JSON.stringify({
+                                api_key: apiKey,
+                                user_jwt: UserToken,
+                                device_mac_address: device.device_mac_address,
+                            }),
+                        }).then(response => response.json())
+                    );
+            
+                    const results = await Promise.all(requests);
+                    results.forEach((data, index) => {
+                        console.log(`Device ${devices[index].device_mac_address} removed from user:`, data);
+                    });
+                } catch (error) {
+                    setIsAllDevicesRemoved(false);
+                    console.error('Error removing devices:', error);
+                    alert('Failed to remove some devices.');
+                }
+
+                if (isAllDevicesRemoved) {
+                    await fetch('https://gridawarecharging.com/api/delete_user_account', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            api_key: apiKey,
+                            user_jwt: UserToken
+                        })
+                    })
+                    .then(response => {
+                        if (response.ok) {
+                            alert("Account Deleted Successfully.");
+                            window.location.href = "/";
+                        } else {
+                            alert("Failed to delete account, please try again later.");
+                        }
+                    });
+                }
+            }
+            else{
+                await fetch('https://gridawarecharging.com/api/delete_user_account', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -189,6 +241,7 @@ const AdminProfile = () => {
                         alert("Failed to delete account, please try again later.");
                     }
                 });
+            }
         }
     }
 
