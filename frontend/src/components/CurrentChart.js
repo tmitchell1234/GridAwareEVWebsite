@@ -187,7 +187,13 @@ function CurrentChart() {
   const data = [];
 
   deviceDataInRecentTime.sort((a, b) => new Date(a.time) - new Date(b.time)); // Sort by time (oldest to newest)
-  deviceDataInTenDays.sort((a, b) => new Date(a.time) - new Date(b.time));
+  // deviceDataInTenDays.sort((a, b) => new Date(a.time) - new Date(b.time));
+  if(deviceDataInTenDays && deviceDataInTenDays.length > 0){
+    deviceDataInTenDays.sort((a, b) => new Date(a.time) - new Date(b.time));
+  }
+  if(deviceDataInOneDays && deviceDataInOneDays.length > 0){
+    deviceDataInOneDays.sort((a, b) => new Date(a.time) - new Date(b.time));
+  }
   if(isTenDaysVoltageSelected) {
     let accumulatedCurrent = 0;
     let count = 0;

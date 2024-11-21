@@ -29,7 +29,7 @@ export const DeviceProvider = ({ children }) => {
   const [isMapLoading, setIsMapLoading] = useState(true);
   const [deviceLocationsFetched, setDeviceLocationsFetched] = useState(false);
   const [deviceColors, setDeviceColors] = useState([]);
-  const [currentDeviceShowing, setCurrentDeviceShowing] = useState({});
+  const [currentDeviceShowing, setCurrentDeviceShowing] = useState([]);
   
 
   return (

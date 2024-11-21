@@ -129,8 +129,12 @@ function FrequencyChart() {
   const data = [];
 
   deviceDataInRecentTime.sort((a, b) => new Date(a.time) - new Date(b.time)); // Sort by time (oldest to newest)
-  deviceDataInTenDays.sort((a, b) => new Date(a.time) - new Date(b.time));
-  deviceDataInOneDays.sort((a, b) => new Date(a.time) - new Date(b.time));
+  if(deviceDataInTenDays && deviceDataInTenDays.length > 0){
+    deviceDataInTenDays.sort((a, b) => new Date(a.time) - new Date(b.time));
+  }
+  if(deviceDataInOneDays && deviceDataInOneDays.length > 0){
+    deviceDataInOneDays.sort((a, b) => new Date(a.time) - new Date(b.time));
+  }
   if(isTenDaysVoltageSelected) {
     let accumulatedVoltage = 0;
     let count = 0;

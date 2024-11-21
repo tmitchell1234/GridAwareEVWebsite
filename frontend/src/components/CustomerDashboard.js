@@ -315,7 +315,10 @@ const CustomerDashboard = () => {
       const data = await response.json();
       // console.log('User devices:', data);
       setDevices(data); // Store devices in state
-      setCurrentDeviceShowing(data[0]);
+      if(Object.keys(currentDeviceShowing).length === 0){
+        setCurrentDeviceShowing(data[0]);
+
+      }
       // logMacAddress();
     } catch (error) {
       console.error('Error:', error);
@@ -325,10 +328,12 @@ const CustomerDashboard = () => {
   // Fetch devices on component mount
   useEffect(() => {
     getUserDevices();
+    
   }, []);
 
   useEffect(() => {
     const fetchData = async () => {
+      
       setIsLoading(true); // Start loading
       setIsVoltageChartLoading(true);
       setIsFrequencyChartLoading(true);
@@ -339,6 +344,8 @@ const CustomerDashboard = () => {
         setDeviceDataInRecentTime(data);
         // console.log("Latest Fetched Data: ", data[data.length - 1]);
         // console.log(" ", data);
+        
+        
       } catch (error) {
         console.error("Error fetching data:", error);
       } finally {
@@ -368,7 +375,7 @@ const CustomerDashboard = () => {
       return () => clearInterval(intervalId);
     }
     // fetchData();
-  }, [devices]);
+  }, [devices, currentDeviceShowing]);
 
 
   // will be used to not fetch continuous data when user is looking at past 7 days data in all of the charts.
@@ -538,6 +545,9 @@ const CustomerDashboard = () => {
           if (deviceIP === 'UCF') {
             deviceIP = '132.170.27.91'; // Update IP
             // console.log('Updated IP Address:', deviceIP);
+          }
+          if(deviceIP === '156.228.92.191'){
+            deviceIP = '69.193.168.152';
           }
 
           // console.log(" String to get location: ");
@@ -726,11 +736,11 @@ const CustomerDashboard = () => {
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
               {isVoltageSelected ? ( // have measurement value : (voltage is just watts) and (current AMP)
                 <> 
-                <h2 style={{ clear: 'left' }}>Voltage</h2>
+                <h2 style={{ clear: 'left' }}>Voltage - {currentDeviceShowing.device_mac_address}</h2>
                 </>
               ) : (
                 <>
-                <h2 style={{ clear: 'left' }}>Current</h2>
+                <h2 style={{ clear: 'left' }}>Current - {currentDeviceShowing.device_mac_address}</h2>
                 </>
               )}
                 <button
@@ -768,7 +778,7 @@ const CustomerDashboard = () => {
               </div>
               <div className="LineChartContainer">
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                  <h2 style={{ clear: 'left' }}>Frequency</h2>
+                  <h2 style={{ clear: 'left' }}>Frequency - {currentDeviceShowing.device_mac_address}</h2>
                   <button
                     style={{ 
                       background: 'transparent', 
@@ -807,14 +817,14 @@ const CustomerDashboard = () => {
               <div className="ChargingHistoryBarChart">
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                   {isChargingHistoryTenDaysSelected ? (
-                          <h2 style={{ clear: 'left' }}>Halting History</h2>
+                          <h2 style={{ clear: 'left' }}>Halting History - {currentDeviceShowing.device_mac_address}</h2>
                         ) : (
                           <>
                           {isChargingHistoryOneDaysSelected ? (
                             <>
-                            <h2 style={{ clear: 'left' }}>Halting History</h2>
+                            <h2 style={{ clear: 'left' }}>Halting History - {currentDeviceShowing.device_mac_address}</h2>
                             </>
-                            ) : (<h2 style={{ clear: 'left' }}>Charging History</h2>)}
+                            ) : (<h2 style={{ clear: 'left' }}>Charging History - {currentDeviceShowing.device_mac_address}</h2>)}
                           </>
                           
                         )}

@@ -362,7 +362,7 @@ button.cancelregistrationbutton:active {
   backdrop-filter: blur(10px);
   background: linear-gradient(
     rgb(242, 241, 241),
-    rgba(255, 255, 255, 0.702)
+    rgba(255, 255, 255, 0.958)
   );
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
   border-radius: 10px;
@@ -430,13 +430,13 @@ button.cancelregistrationbutton:active {
   /* background-color: #f9f9f9;  */
   backdrop-filter: blur(10px);
   background: linear-gradient(
-    rgb(242, 241, 241),
-    rgba(255, 255, 255, 0.702)
+    rgb(255, 254, 254),
+    rgba(255, 255, 255, 0.958)
   );
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
   border-radius: 10px;
   display: flex;
-  width: 110%;
+  width: 95%;
   flex-direction: column;
   padding: 1%;
 }
@@ -449,12 +449,12 @@ button.cancelregistrationbutton:active {
   backdrop-filter: blur(10px);
   background: linear-gradient(
     rgb(242, 241, 241),
-    rgba(255, 255, 255, 0.702)
+    rgba(255, 255, 255, 0.958)
   );
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
   border-radius: 10px;
   display: flex;
-  width: 38%;
+  width: 35%;
   flex-direction: column;
   padding: 1%;
 }

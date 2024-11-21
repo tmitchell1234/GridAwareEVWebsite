@@ -9,8 +9,11 @@ const DeviceMap = ({ width = 1195, height = 430 }) => {
   const zoomRef = useRef(d3.zoom());
   const [zoomLevel, setZoomLevel] = useState(1);
   const [worldMap, setWorldMap] = useState(null);
-  const { deviceCordinates, deviceColors, currentDeviceShowing, setCurrentDeviceShowing, devices, settenDaysDataAdded, setOneDaysDataAdded} = useDeviceContext();
+  const { deviceCordinates, deviceColors, currentDeviceShowing, setCurrentDeviceShowing, devices, 
+    settenDaysDataAdded, setOneDaysDataAdded, setIsVoltageChartLoading, setIsFrequencyChartLoading, setIsChargingHistoryLoading, setIsLoading} = useDeviceContext();
   const data = deviceCordinates;
+
+  
 
   // Fetch world map data
   useEffect(() => {
@@ -84,7 +87,7 @@ const DeviceMap = ({ width = 1195, height = 430 }) => {
           // Log the details of the clicked bubble
           if (d.properties && d.properties.name) {
             const parts = d.properties.name.split(' '); // Split the string by spaces
-            const secondPart = parts[1]; // Access the second part of the name which is the device mac address
+            const secondPart = parts[parts.length - 1]; // Access the second part of the name which is the device mac address
             const index = d3.select(event.currentTarget).attr('data-index');
             // console.log('Second part of the name:', secondPart);
             // console.log(currentDeviceShowing);
@@ -93,9 +96,15 @@ const DeviceMap = ({ width = 1195, height = 430 }) => {
               // console.log('This is the device on the charts up top');
               // console.log('Array index of the clicked bubble: ', index);
               // console.log(devices[index].device_mac_address);
-              setCurrentDeviceShowing(devices[index].device_mac_address);
+
+              
               settenDaysDataAdded(false);
               setOneDaysDataAdded(false);
+              setIsChargingHistoryLoading(true);
+              setIsVoltageChartLoading(true);
+              setIsFrequencyChartLoading(true);
+              setIsLoading(true);
+              setCurrentDeviceShowing(devices[index]);
             }
           }
     
@@ -164,7 +173,7 @@ const DeviceMap = ({ width = 1195, height = 430 }) => {
       clearInterval(intervalId);
     };
 
-  }, [width, height, worldMap, data, deviceColors]);
+  }, [width, height, worldMap, data, deviceColors, currentDeviceShowing]);
 
   if (width === 0 || !worldMap) {
     return null;

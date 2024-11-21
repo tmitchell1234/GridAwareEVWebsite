@@ -97,8 +97,14 @@ function CustomBarChart() {
   // Start from the last element and move backward to make sure I grab the lastest information available
   deviceDataInRecentTime.sort((a, b) => new Date(a.time) - new Date(b.time)); // Sort by time (oldest to newest)
   // Sort the deviceDataInTenDays by time
-  deviceDataInTenDays.sort((a, b) => new Date(a.time) - new Date(b.time));
-  deviceDataInOneDays.sort((a, b) => new Date(a.time) - new Date(b.time));
+  // deviceDataInTenDays.sort((a, b) => new Date(a.time) - new Date(b.time));
+  // deviceDataInOneDays.sort((a, b) => new Date(a.time) - new Date(b.time));
+  if(deviceDataInTenDays && deviceDataInTenDays.length > 0){
+    deviceDataInTenDays.sort((a, b) => new Date(a.time) - new Date(b.time));
+  }
+  if(deviceDataInOneDays && deviceDataInOneDays.length > 0){
+    deviceDataInOneDays.sort((a, b) => new Date(a.time) - new Date(b.time));
+  }
 
   // console.log("Device In Recent Time: ", deviceDataInRecentTime);
 
